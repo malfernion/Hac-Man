@@ -3,6 +3,13 @@
   min-height: 100vh;
   text-align: center;
   overflow: hidden;
+  display: grid;
+  grid-template-columns: 1fr 812px 1fr;
+  grid-template-rows: 50px 1fr 50px;
+  grid-gap: 25px;
+  grid-template-areas: "header header header"
+                       "left main right"
+                       "footer footer footer"
 }
 
 .App-logo {
@@ -19,6 +26,7 @@
 .App-header {
   font-size: calc(10px + 2vmin);
   color: yellow;
+  grid-area: header;
 }
 
 .App-header h1 {
@@ -27,14 +35,22 @@
 }
 
 .Game-board {
-  height: 800px;
-  width: 800px;
-  margin: 20px;
+  height: 812px;
+  width: 812px;
   padding: 5px;
   border: 2px solid yellow;
   border-radius: 5px;
   margin-left: auto;
   margin-right: auto;
+  grid-area: main;
+}
+
+.game-info {
+  grid-area: left
+}
+
+.debug-info {
+  grid-area: right
 }
 
 .App-link {
@@ -45,10 +61,14 @@
   width: 90%;
   color: yellow;
   border: 2px solid yellow;
-  border-radius: 10px;
-  margin-bottom: 15px;
+  border-radius: 5px;
+  max-height: 750px;
+  margin-top: 30px;
   margin-left: auto;
   margin-right: auto;
+  display: grid;
+  grid-template-rows: 10% 1fr;
+  grid-gap: 20px;
 }
 
 .Info h2 {
@@ -58,19 +78,8 @@
 }
 
 .Info .Info-content {
-  display: flex;
+  display: grid;
+  grid-template-rows: 1fr 1fr 1fr;
   padding-bottom: 15px;
-}
-
-.Info .Info-content span {
-  flex: 1 1 0px;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+  padding-top: 20px;
 }

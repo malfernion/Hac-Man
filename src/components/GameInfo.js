@@ -5,7 +5,7 @@ export default class GameInfo extends React.Component {
         const { score, lives, killCount } = this.props.gameInfo;
 
         return (
-            <section className="Info">
+            <section className="Info game-info">
                 <h2>Game Info:</h2>
                 <div className="Info-content">
                     <span>Score: {score}</span>

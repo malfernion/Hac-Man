@@ -1,14 +1,14 @@
 const defaultState = {
     position: {
-        x: 400,
-        y: 400
+        x: 14.5*28,
+        y: 10.5*28,
     },
-    size: 20,
+    size: 28,
     direction: 'NONE',
 };
 
-const speed = 80;
-const boardSize = 800;
+const speed = 70;
+const boardSize = 812;
 
 function checkAndTransformIntoBounds(position) {
     if(position.x > boardSize) {
@@ -64,6 +64,7 @@ export default (state = Object.assign({}, defaultState), action) => {
                 position: newPosition,
             });
         case 'COLLIDED':
+            debugger;
             // move the player back to their previous position and stop them moving
             moveAmount = -action.timeElapsed * speed;
             newPosition = getNewPosition(state.position, state.direction, moveAmount);
