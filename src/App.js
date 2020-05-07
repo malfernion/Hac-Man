@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { switchDebug, resetGame, startGame } from './actions/gameInfoActions';
-import { changePlayerDirection, movePlayer, resetPlayer } from './actions/playerActions';
+import { changePlayerDirection, movePlayer, resetPlayer, playerCollided } from './actions/playerActions';
 
 import DebugInfo from './components/DebugInfo';
 import GameInfo from './components/GameInfo';
@@ -79,7 +79,9 @@ class App extends React.Component {
         <header className="App-header">
           <h1>Hac-Man</h1>
         </header>
-        <GameBoard player={this.props.player}/>
+        <GameBoard 
+          player={this.props.player}
+        />
         <DebugInfo
           gameInfo={this.props.gameInfo}
           player={this.props.player}
@@ -101,6 +103,7 @@ const mapDispatchToProps = dispatch => ({
   changePlayerDirection: (direction) => dispatch(changePlayerDirection(direction)),
   movePlayer: (tickDuration) => dispatch(movePlayer(tickDuration)),
   resetPlayer: () => dispatch(resetPlayer()),
+  playerCollided: (tickDuration) => dispatch(playerCollided(tickDuration)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);

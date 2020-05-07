@@ -12,6 +12,13 @@ export const movePlayer = (timeElapsed) => {
     };
 };
 
+export const playerCollided = (timeElapsed) => {
+    return {
+        type: 'COLLIDED',
+        timeElapsed,
+    };
+};
+
 export const resetPlayer = () => {
     return {
         type: 'RESET_PLAYER',
