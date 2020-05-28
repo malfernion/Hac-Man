@@ -36,7 +36,7 @@ export default class GameBackground extends React.Component {
     drawWalls(wallRenderWidth, walls) {
         this.ctx.lineWidth = '3';
         this.ctx.strokeStyle = 'blue';
-        this.ctx.fillStyle = '#282c34';
+        this.ctx.fillStyle = 'black';
         
         for (const wall of walls) {
             const wallEdges = [wall[0] + wallRenderWidth / 2, wall[1] + wallRenderWidth / 2, wall[2] - wallRenderWidth, wall[3] - wallRenderWidth];

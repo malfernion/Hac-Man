@@ -8,13 +8,14 @@ export default class GameBoard extends React.Component {
 
     drawPlayer(ctx) {
         const { position, size } = this.props.player;
+        ctx.drawImage(this.sprite, 2+0, 64, 16, 16, position.x-size/2, position.y-size/2, size, size);
 
-        ctx.lineWidth = '1';
-        ctx.strokeStyle ='yellow';
-        ctx.fillStyle = 'yellow';
-        ctx.beginPath();
-        ctx.arc(position.x, position.y, size/2, 0, Math.PI * 2, true);
-        ctx.fill();
+        // ctx.lineWidth = '1';
+        // ctx.strokeStyle ='yellow';
+        // ctx.fillStyle = 'yellow';
+        // ctx.beginPath();
+        // ctx.arc(position.x, position.y, size/2, 0, Math.PI * 2, true);
+        // ctx.fill();
     }
 
     doDrawing() {
@@ -26,10 +27,14 @@ export default class GameBoard extends React.Component {
 
     componentDidMount() {
         const activeCanvas = document.getElementById('active-canvas');
-        if(activeCanvas && activeCanvas.getContext) {
-            this.activeCtx = activeCanvas.getContext('2d');
-        }
-        this.doDrawing();
+        this.activeCtx = activeCanvas.getContext('2d');
+
+        this.sprite = new Image();
+        this.sprite.src = require('../assets/sprites_16_x_16.png');
+        this.sprite.onload = () => {
+            this.spriteLoaded = true;
+            this.doDrawing();
+        };
     }
 
     render() {
