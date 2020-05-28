@@ -1,77 +1,42 @@
+import { getNextCharacterPositionForDirection, checkAndTransformIntoBounds } from '../helpers/movementHelpers';
+
 const defaultState = {
     position: {
         x: 14.5*28,
         y: 10.5*28,
     },
-    size: 28,
-    direction: 'NONE',
-};
-
-const speed = 70;
-const boardSize = 812;
-
-function checkAndTransformIntoBounds(position) {
-    if(position.x > boardSize) {
-        position.x -= boardSize;
-    } else if (position.x < 0) {
-        position.x +=boardSize;
-    }
-
-    if(position.y > boardSize) {
-        position.y -= boardSize;
-    } else if (position.y < 0) {
-        position.y += boardSize;
-    }
-};
-
-function getNewPosition(position, direction, moveAmount) {
-    const newPosition = Object.assign({}, position);
-
-    switch(direction) {
-        case 'UP':
-            newPosition.y -= moveAmount;
-            break;
-        case 'DOWN':
-            newPosition.y += moveAmount;
-            break;
-        case 'LEFT':
-            newPosition.x -= moveAmount;
-            break;
-        case 'RIGHT':
-            newPosition.x += moveAmount;
-            break;
-        default:
-            // default is not to move
-    }
-
-    return newPosition;
+    size: 27,
+    speed: 60
 };
 
 export default (state = Object.assign({}, defaultState), action) => {
-    let moveAmount, newPosition;
-
     switch(action.type) {
-        case 'CHANGE_DIRECTION':
+        case 'DIRECTION_PRESSED':
+            const { direction } = state;
+            let newState = Object.assign({}, state);
+            if(direction) {
+                newState.nextDirection = action.direction;
+            } else {
+                newState.direction = action.direction;
+            }
+            return newState;
+        case 'CHANGE_TO_NEXT_DIRECTION':
             return Object.assign({}, state, {
-                direction: action.direction,
+                direction: state.nextDirection,
+                nextDirection: null
             });
         case 'MOVE':
-            moveAmount = action.timeElapsed * speed;
-            newPosition = getNewPosition(state.position, state.direction, moveAmount);
+            let newPosition = getNextCharacterPositionForDirection(state, state.direction, action.timeElapsed);
             checkAndTransformIntoBounds(newPosition);
             
             return Object.assign({}, state, {
                 position: newPosition,
             });
         case 'COLLIDED':
-            debugger;
             // move the player back to their previous position and stop them moving
-            moveAmount = -action.timeElapsed * speed;
-            newPosition = getNewPosition(state.position, state.direction, moveAmount);
-
             return Object.assign({}, state, {
-                position: newPosition,
-                direction: 'NONE',
+                position: getNextCharacterPositionForDirection(state, state.direction, -action.timeElapsed),
+                direction: null
             });
         case 'RESET_PLAYER':
             return Object.assign({}, defaultState);

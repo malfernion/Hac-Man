@@ -1,7 +1,13 @@
-export const changePlayerDirection = (direction) => {
+export const directionPressed = (direction) => {
     return {
-        type: 'CHANGE_DIRECTION',
+        type: 'DIRECTION_PRESSED',
         direction,
+    };
+};
+
+export const changeToNextDirection = () => {
+    return {
+        type: 'CHANGE_TO_NEXT_DIRECTION',
     };
 };
 

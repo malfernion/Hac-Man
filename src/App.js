@@ -1,7 +1,9 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { switchDebug, resetGame, startGame } from './actions/gameInfoActions';
-import { changePlayerDirection, movePlayer, resetPlayer, playerCollided } from './actions/playerActions';
+import { directionPressed, movePlayer, resetPlayer, playerCollided, changeToNextDirection } from './actions/playerActions';
+import { hasWallCollisions } from './helpers/collisionHelpers';
+import { canChangeDirection } from './helpers/movementHelpers';
 
 import DebugInfo from './components/DebugInfo';
 import GameInfo from './components/GameInfo';
@@ -10,16 +12,18 @@ import GameBoard from './components/GameBoard';
 import './App.css';
 
 class App extends React.Component {
-  constructor(props) {
-    super(props);
-    this.tickDuration = 1 / 60;
-    this.wallCollisionLeeway = 5;
-  }
-
   runGame = () => {
+    const { gameInfo: { tickDuration }} = this.props;
+    const {levels: {currentLevel: { walls }}} = this.props;
+    
     // moving logic
-    this.props.movePlayer(this.tickDuration);
-    this.checkCollisions();
+    if(canChangeDirection(this.props.player, this.props.player.nextDirection, walls, tickDuration)) {
+      this.props.changeToNextDirection();
+    }
+    this.props.movePlayer(tickDuration);
+    if(hasWallCollisions(this.props.player, walls)) {
+      this.props.playerCollided(tickDuration);
+    }
 
     //wait for next tick
     setTimeout(
@@ -28,44 +32,12 @@ class App extends React.Component {
           this.runGame();
         }   
       },
-      this.tickDuration
+      tickDuration
     );
   }
 
-  isCordWithinWall = (cord, wall) => {
-    const lowerX = wall[0] + this.wallCollisionLeeway;
-    const lowerY = wall[1] + this.wallCollisionLeeway;
-    const upperX = (lowerX + wall[2]) - (2*this.wallCollisionLeeway);
-    const upperY = (lowerY + wall[3]) - (2*this.wallCollisionLeeway);
-
-    return (cord[0] > lowerX && cord[0] < upperX) && (cord[1] > lowerY && cord[1] < upperY);
-  }
-
-  // Check for player collisions with walls and other actors
-  checkCollisions = () => {
-    const { position, size } = this.props.player;
-    const { walls } = this.props.levels.currentLevel;
-
-    // get the player bounding cords
-    const boundingCords = {
-      tl: [position.x - size/2, position.y - size/2],
-      tr: [position.x + size/2, position.y - size/2],
-      bl: [position.x - size/2, position.y + size/2],
-      br: [position.x + size/2, position.y + size/2],
-    }
-
-    //check if the player bounding cords are within any wall
-    for (const wall of walls) {
-      for (const cordKey in boundingCords) {
-        if(this.isCordWithinWall(boundingCords[cordKey], wall)) {
-          this.props.playerCollided(this.tickDuration);
-        }
-      }
-    }
-  }
-
   move = (direction) => {
-    this.props.changePlayerDirection(direction);
+    this.props.directionPressed(direction);
     const { gameStarted } = this.props.gameInfo;
     if(!gameStarted) {
       this.props.startGame();
@@ -139,10 +111,11 @@ const mapDispatchToProps = dispatch => ({
   switchDebug: () => dispatch(switchDebug()),
   resetGame: () => dispatch(resetGame()),
   startGame: () => dispatch(startGame()),
-  changePlayerDirection: (direction) => dispatch(changePlayerDirection(direction)),
+  directionPressed: (direction) => dispatch(directionPressed(direction)),
   movePlayer: (tickDuration) => dispatch(movePlayer(tickDuration)),
   resetPlayer: () => dispatch(resetPlayer()),
   playerCollided: (tickDuration) => dispatch(playerCollided(tickDuration)),
+  changeToNextDirection: () => dispatch(changeToNextDirection()),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);

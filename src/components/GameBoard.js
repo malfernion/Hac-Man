@@ -31,8 +31,8 @@ export default class GameBoard extends React.Component {
         this.ctx.beginPath();
 
         for (const wall of walls) {
-            const smallerWall = [wall[0] + this.wallWidth / 2, wall[1] + this.wallWidth / 2, wall[2] - this.wallWidth, wall[3] - this.wallWidth];
-            this.ctx.rect(...smallerWall);
+            const wallEdges = [wall[0] + this.wallWidth / 2, wall[1] + this.wallWidth / 2, wall[2] - this.wallWidth, wall[3] - this.wallWidth];
+            this.ctx.rect(...wallEdges);
         }
         this.ctx.stroke();
     }
