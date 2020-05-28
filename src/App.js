@@ -15,7 +15,7 @@ class App extends React.Component {
   runGame = () => {
     const { gameInfo: { tickDuration }} = this.props;
     const {levels: {currentLevel: { walls }}} = this.props;
-    
+
     // moving logic
     if(canChangeDirection(this.props.player, this.props.player.nextDirection, walls, tickDuration)) {
       this.props.changeToNextDirection();
@@ -91,7 +91,7 @@ class App extends React.Component {
         </header>
         <GameBoard
           player={this.props.player}
-          level={this.props.levels.currentLevel}
+          level={this.props.levels}
         />
         <DebugInfo
           gameInfo={this.props.gameInfo}

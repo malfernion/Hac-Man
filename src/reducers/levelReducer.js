@@ -1,6 +1,7 @@
 import levels from '../data/levels';
 
-const drawingScale = 812/29;
+const boardSize = 812;
+const drawingScale = boardSize/29;
 
 const scaledLevels = levels.levels.map(level => {
     let { name, characters, walls } = level;
@@ -18,7 +19,9 @@ const scaledLevels = levels.levels.map(level => {
 const defaultState = {
     currentLevelNumber: 0,
     currentLevel: scaledLevels[0],
-    levels: scaledLevels
+    levels: scaledLevels,
+    wallRenderWidth: 12,
+    boardSize
 };
 
 

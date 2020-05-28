@@ -34,7 +34,7 @@
   font-style: italic;
 }
 
-.Game-board {
+.game-board {
   height: 812px;
   width: 812px;
   padding: 5px;
@@ -43,6 +43,11 @@
   margin-left: auto;
   margin-right: auto;
   grid-area: main;
+  text-align: left;
+}
+
+canvas {
+  position: fixed;
 }
 
 .game-info {

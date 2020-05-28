@@ -1,64 +1,45 @@
 import React from 'react';
+import GameBackground from './GameBackground';
 
 export default class GameBoard extends React.Component {
-
-    constructor(props) {
-        super(props);
-        this.boardSize = 812;
-        this.ctx = null;
-        this.wallWidth = 12;
+    clearCanvas(ctx) {
+        ctx.clearRect(0, 0, this.props.level.boardSize, this.props.level.boardSize);
     }
 
-    clearBoard() {
-        this.ctx.clearRect(0, 0, this.boardSize, this.boardSize);
-    }
-
-    drawPlayer() {
+    drawPlayer(ctx) {
         const { position, size } = this.props.player;
 
-        this.ctx.lineWidth = '1';
-        this.ctx.strokeStyle ='yellow';
-        this.ctx.fillStyle = 'yellow';
-        this.ctx.beginPath();
-        this.ctx.arc(position.x, position.y, size/2, 0, Math.PI * 2, true);
-        this.ctx.fill();
-    }
-
-    drawWalls() {
-        const { walls } = this.props.level;
-        this.ctx.lineWidth = '3';
-        this.ctx.strokeStyle ='blue';
-        this.ctx.beginPath();
-
-        for (const wall of walls) {
-            const wallEdges = [wall[0] + this.wallWidth / 2, wall[1] + this.wallWidth / 2, wall[2] - this.wallWidth, wall[3] - this.wallWidth];
-            this.ctx.rect(...wallEdges);
-        }
-        this.ctx.stroke();
+        ctx.lineWidth = '1';
+        ctx.strokeStyle ='yellow';
+        ctx.fillStyle = 'yellow';
+        ctx.beginPath();
+        ctx.arc(position.x, position.y, size/2, 0, Math.PI * 2, true);
+        ctx.fill();
     }
 
     doDrawing() {
-        if(this.ctx) {
-            this.clearBoard();
-            this.drawPlayer();
-            this.drawWalls();
+        if(this.activeCtx) {
+            this.clearCanvas(this.activeCtx);
+            this.drawPlayer(this.activeCtx);
         }
     }
 
     componentDidMount() {
-        const canvas = document.getElementById('gameCanvas');
-        if(canvas && canvas.getContext) {
-            this.ctx = canvas.getContext('2d');
+        const activeCanvas = document.getElementById('active-canvas');
+        if(activeCanvas && activeCanvas.getContext) {
+            this.activeCtx = activeCanvas.getContext('2d');
         }
         this.doDrawing();
     }
 
     render() {
+        const {level: { boardSize }} = this.props;
         this.doDrawing();
 
         return (
-            <section className="Game-board">
-                <canvas id="gameCanvas" width={this.boardSize} height={this.boardSize}>
+            <section className="game-board">
+                <GameBackground level={this.props.level}></GameBackground>
+                <canvas id="active-canvas" width={boardSize} height={boardSize}>
                     <span>Sorry, the game requires canvas support which you don't appear to have..</span>
                 </canvas>
             </section>
