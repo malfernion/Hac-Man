@@ -1,4 +1,5 @@
 import { getNextCharacterPositionForDirection, checkAndTransformIntoBounds } from '../helpers/movementHelpers';
+import { getSpriteCords } from '../helpers/animationHelpers';
 
 const defaultState = {
     position: {
@@ -6,7 +7,32 @@ const defaultState = {
         y: 10.5*28,
     },
     size: 27,
-    speed: 120
+    speed: 120,
+    sprites: {
+        'RIGHT': [
+            [34, 0],
+            [18, 0],
+            [2, 0]
+        ],
+        'LEFT': [
+            [34, 0],
+            [18, 16],
+            [2, 16]
+        ],
+        'DOWN': [
+            [34, 0],
+            [18, 48],
+            [2, 48]
+        ],
+        'UP': [
+            [34, 0],
+            [18, 32],
+            [2, 32]
+        ]
+    },
+    spriteCords: [34, 0],
+    animationFrameCount: 0,
+    framesPerSprite: 3
 };
 
 export default (state = Object.assign({}, defaultState), action) => {
@@ -31,6 +57,8 @@ export default (state = Object.assign({}, defaultState), action) => {
             
             return Object.assign({}, state, {
                 position: newPosition,
+                animationFrameCount: state.animationFrameCount + 1,
+                spriteCords: getSpriteCords(state)
             });
         case 'COLLIDED':
             // move the player back to their previous position and stop them moving
