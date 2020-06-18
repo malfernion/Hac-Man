@@ -5,7 +5,6 @@ const defaultState = {
     killCount: 0,
     showGameOver: false,
     gameStarted: false,
-    tickDuration: 1 / 60,
 };
 
 export default (state = Object.assign({}, defaultState), action) => {

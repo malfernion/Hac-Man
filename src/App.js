@@ -12,28 +12,23 @@ import GameBoard from './components/GameBoard';
 import './App.css';
 
 class App extends React.Component {
-  runGame = () => {
-    const { gameInfo: { tickDuration }} = this.props;
+  runGame = (timestamp) => {
+    let timeElapsed = this.frameStart === undefined ? 0 : (timestamp - this.frameStart) / 1000;
+    this.frameStart = timestamp;
     const {levels: {currentLevel: { walls }}} = this.props;
 
     // moving logic
-    if(canChangeDirection(this.props.player, this.props.player.nextDirection, walls, tickDuration)) {
+    if(canChangeDirection(this.props.player, this.props.player.nextDirection, walls, timeElapsed)) {
       this.props.changeToNextDirection();
     }
-    this.props.movePlayer(tickDuration);
+    this.props.movePlayer(timeElapsed);
     if(hasWallCollisions(this.props.player, walls)) {
-      this.props.playerCollided(tickDuration);
+      this.props.playerCollided(timeElapsed);
     }
 
-    //wait for next tick
-    setTimeout(
-      () => {
-        if(this.props.gameInfo.gameStarted && !this.props.gameInfo.showGameOver) {
-          this.runGame();
-        }   
-      },
-      tickDuration
-    );
+    if(this.props.gameInfo.gameStarted && !this.props.gameInfo.showGameOver) {
+      window.requestAnimationFrame(this.runGame);
+    }
   }
 
   move = (direction) => {
@@ -41,7 +36,7 @@ class App extends React.Component {
     const { gameStarted } = this.props.gameInfo;
     if(!gameStarted) {
       this.props.startGame();
-      this.runGame();
+      window.requestAnimationFrame(this.runGame);
     }
   }
 
