@@ -1,8 +1,9 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { switchDebug, resetGame, startGame } from './actions/gameInfoActions';
+import { switchDebug, resetGame, startGame, increaseScore } from './actions/gameInfoActions';
 import { directionPressed, movePlayer, resetPlayer, playerCollided, changeToNextDirection } from './actions/playerActions';
-import { hasWallCollisions } from './helpers/collisionHelpers';
+import { coinCollected, resetLeveLProgress } from './actions/levelActions';
+import { hasWallCollision, findCollidingCoin } from './helpers/collisionHelpers';
 import { canChangeDirection } from './helpers/movementHelpers';
 
 import DebugInfo from './components/DebugInfo';
@@ -15,19 +16,24 @@ class App extends React.Component {
   runGame = (timestamp) => {
     let timeElapsed = this.frameStart === undefined ? 0 : (timestamp - this.frameStart) / 1000;
     this.frameStart = timestamp;
-    const {levels: {currentLevel: { walls }}} = this.props;
+    const {levels: {currentLevel: { walls, coins }}} = this.props;
 
     // moving logic
     if(canChangeDirection(this.props.player, this.props.player.nextDirection, walls, timeElapsed)) {
       this.props.changeToNextDirection();
     }
     this.props.movePlayer(timeElapsed);
-    if(hasWallCollisions(this.props.player, walls)) {
+    if(hasWallCollision(this.props.player, walls)) {
       this.props.playerCollided(timeElapsed);
+    }
+    const collidingCoin = findCollidingCoin(this.props.player, coins);
+    if(collidingCoin) {
+      this.props.coinCollected(collidingCoin);
+      this.props.increaseScore(10)
     }
 
     if(this.props.gameInfo.gameStarted && !this.props.gameInfo.showGameOver) {
-      window.requestAnimationFrame(this.runGame);
+      this.animationRequest = window.requestAnimationFrame(this.runGame);
     }
   }
 
@@ -36,7 +42,7 @@ class App extends React.Component {
     const { gameStarted } = this.props.gameInfo;
     if(!gameStarted) {
       this.props.startGame();
-      window.requestAnimationFrame(this.runGame);
+      this.animationRequest = window.requestAnimationFrame(this.runGame);
     }
   }
 
@@ -72,6 +78,11 @@ class App extends React.Component {
         // r
         this.props.resetGame();
         this.props.resetPlayer();
+        this.props.resetLeveLProgress();
+        if(this.animationRequest) {
+          window.cancelAnimationFrame(this.animationRequest);
+        }
+        this.frameStart = undefined;
         break;
       default:
         // do nothing for unsupported keys
@@ -111,6 +122,9 @@ const mapDispatchToProps = dispatch => ({
   resetPlayer: () => dispatch(resetPlayer()),
   playerCollided: (tickDuration) => dispatch(playerCollided(tickDuration)),
   changeToNextDirection: () => dispatch(changeToNextDirection()),
+  coinCollected: (coin) => dispatch(coinCollected(coin)),
+  increaseScore: (score) => dispatch(increaseScore(score)),
+  resetLeveLProgress: () => dispatch(resetLeveLProgress()),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);

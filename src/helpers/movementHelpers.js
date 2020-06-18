@@ -1,4 +1,4 @@
-import { hasWallCollisions } from "./collisionHelpers";
+import { hasWallCollision } from "./collisionHelpers";
 
 const boardSize = 812;
 
@@ -64,7 +64,7 @@ export function canChangeDirection(character, nextDirection, walls, duration) {
     }
 
     const nextCords = getNextCharacterPositionForDirection(character, nextDirection, duration);
-    if(hasWallCollisions({ position: nextCords, size: character.size}, walls)) {
+    if(hasWallCollision({ position: nextCords, size: character.size}, walls)) {
         return false;
     }
     return true;
