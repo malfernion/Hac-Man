@@ -6,7 +6,7 @@ const defaultState = {
         y: 10.5*28,
     },
     size: 27,
-    speed: 60
+    speed: 120
 };
 
 export default (state = Object.assign({}, defaultState), action) => {
