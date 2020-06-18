@@ -4,7 +4,7 @@ import { getSpriteCords } from '../helpers/animationHelpers';
 const defaultState = {
     position: {
         x: 14.5*28,
-        y: 10.5*28,
+        y: 22.5*28,
     },
     size: 27,
     speed: 120,
@@ -39,7 +39,7 @@ export default (state = Object.assign({}, defaultState), action) => {
     switch(action.type) {
         case 'DIRECTION_PRESSED':
             const { direction } = state;
-            let newState = Object.assign({}, state);
+            const newState = Object.assign({}, state);
             if(direction) {
                 newState.nextDirection = action.direction;
             } else {

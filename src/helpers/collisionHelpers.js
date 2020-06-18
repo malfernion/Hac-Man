@@ -18,14 +18,12 @@ export function areAnyCordsWithinWall (cords, wall) {
 }
 
 /**
- * Checks for collisions between the passed character and walls of the current level
+ * Checks for collision between the passed character and walls of the current level
  * @param {*} character the character to check for collisions
  * @param {*} walls the array of walls to check for collisions against
  */
-export function hasWallCollisions (character, walls) {
+export function hasWallCollision (character, walls) {
     const { position, size } = character;
-
-    // get the player bounding cords
     const boundingCords = [
         // tl
         [position.x - size/2, position.y - size/2],
@@ -44,4 +42,26 @@ export function hasWallCollisions (character, walls) {
         }
     }
     return false;
+}
+
+/**
+ * Checks for collisions between the passed character and coins of the current level, returning the colliding coin
+ * @param {*} character the character to check for collisions
+ * @param {*} walls the array of coins to check for collisions against
+ */
+export function findCollidingCoin (character, coins) {
+    const { position, size } = character;
+    const characterLowerX = position.x - size/2;
+    const characterUpperX = position.x + size/2;
+    const characterLowerY = position.y - size/2;
+    const characterUpperY = position.y + size/2;
+
+    for (const coin of coins) {
+        const cx = coin[0];
+        const cy = coin[1];
+
+        if((cx > characterLowerX && cx < characterUpperX) && (cy > characterLowerY && cy < characterUpperY)) {
+            return coin;
+        }
+    }
 }
