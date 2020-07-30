@@ -39,7 +39,6 @@ export default class GameBoard extends React.Component {
         this.sprite = new Image();
         this.sprite.src = require('../assets/sprites_16_x_16.png');
         this.sprite.onload = () => {
-            this.spriteLoaded = true;
             this.doDrawing();
         };
     }

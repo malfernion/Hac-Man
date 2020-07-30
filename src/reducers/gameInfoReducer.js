@@ -5,6 +5,7 @@ const defaultState = {
     killCount: 0,
     showGameOver: false,
     gameStarted: false,
+    playingIntro: false,
 };
 
 export default (state = Object.assign({}, defaultState), action) => {
@@ -32,6 +33,10 @@ export default (state = Object.assign({}, defaultState), action) => {
         case 'RESET_GAME':
             return Object.assign({}, defaultState);
         case 'START_GAME':
+            return Object.assign({}, state, {
+                playingIntro: true,
+            });
+        case 'INTRO_FINISHED':
             return Object.assign({}, state, {
                 gameStarted: true,
             });
