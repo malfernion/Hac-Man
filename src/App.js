@@ -9,6 +9,7 @@ import { canChangeDirection } from './helpers/movementHelpers';
 import DebugInfo from './components/DebugInfo';
 import GameInfo from './components/GameInfo';
 import GameBoard from './components/GameBoard';
+import GameAudio from './components/GameAudio';
 
 import './App.css';
 
@@ -37,11 +38,18 @@ class App extends React.Component {
     }
   }
 
-  move = (direction) => {
+  onMovePressed = (direction) => {
     this.props.directionPressed(direction);
-    const { gameStarted } = this.props.gameInfo;
-    if(!gameStarted) {
+    const { gameStarted, playingIntro } = this.props.gameInfo;
+    if(!gameStarted && !playingIntro) {
       this.props.startGame();
+    }
+  }
+
+  componentDidUpdate = (oldProps) => {
+    const { gameStarted } = this.props.gameInfo;
+    const { gameStarted: oldGameStarted } = oldProps.gameInfo;
+    if(gameStarted && !oldGameStarted) {
       this.animationRequest = window.requestAnimationFrame(this.runGame);
     }
   }
@@ -53,22 +61,22 @@ class App extends React.Component {
       case 37:
       case 65:
         // left
-        this.move('LEFT');
+        this.onMovePressed('LEFT');
         break;
       case 38:
       case 87:
         // up
-        this.move('UP');
+        this.onMovePressed('UP');
         break;
       case 39:
       case 68:
         // right
-        this.move('RIGHT');
+        this.onMovePressed('RIGHT');
         break;
       case 40:
       case 83:
         //down
-        this.move('DOWN');
+        this.onMovePressed('DOWN');
         break;
       case 69:
         // e
@@ -95,6 +103,7 @@ class App extends React.Component {
         <header className="App-header">
           <h1>Hac-Man</h1>
         </header>
+        <GameAudio gameInfo={this.props.gameInfo} />
         <GameBoard
           player={this.props.player}
           level={this.props.levels}

@@ -43,3 +43,9 @@ export const startGame = () => {
         type: 'START_GAME',
     };
 };
+
+export const introFinished = () => {
+    return {
+        type: 'INTRO_FINISHED',
+    };
+};
