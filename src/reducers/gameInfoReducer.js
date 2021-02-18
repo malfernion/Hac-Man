@@ -1,19 +1,16 @@
 const defaultState = {
-    debug: false,
     score: 0,
     lives: 3,
     killCount: 0,
     showGameOver: false,
     gameStarted: false,
     playingIntro: false,
+    showStageName: true,
+    levelCompleted: false,
 };
 
 export default (state = Object.assign({}, defaultState), action) => {
     switch(action.type) {
-        case 'SWITCH_DEBUG':
-            return Object.assign({}, state, {
-                debug: !state.debug,
-            });
         case 'INCREASE_SCORE':
             return Object.assign({}, state, {
                 score: state.score + action.score,
@@ -35,10 +32,16 @@ export default (state = Object.assign({}, defaultState), action) => {
         case 'START_GAME':
             return Object.assign({}, state, {
                 playingIntro: true,
+                showStageName: false,
             });
         case 'INTRO_FINISHED':
             return Object.assign({}, state, {
                 gameStarted: true,
+            });
+        case 'LEVEL_COMPLETED':
+            return Object.assign({}, state, {
+                gameStarted: false,
+                levelCompleted: true,
             });
         default:
             return state;

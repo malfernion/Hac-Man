@@ -1,9 +1,3 @@
-export const switchDebug = () => {
-    return {
-        type: 'SWITCH_DEBUG',
-    };
-};
-
 export const increaseScore = (score) => {
     return {
         type: 'INCREASE_SCORE',
@@ -47,5 +41,11 @@ export const startGame = () => {
 export const introFinished = () => {
     return {
         type: 'INTRO_FINISHED',
+    };
+};
+
+export const levelCompleted = () => {
+    return {
+        type: 'LEVEL_COMPLETED',
     };
 };

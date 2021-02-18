@@ -1,15 +1,15 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { switchDebug, resetGame, startGame, increaseScore } from './actions/gameInfoActions';
-import { directionPressed, movePlayer, resetPlayer, playerCollided, changeToNextDirection } from './actions/playerActions';
+import { resetGame, startGame, increaseScore, levelCompleted } from './actions/gameInfoActions';
+import { directionPressed, movePlayer, resetPlayer, playerCollided, changeToNextDirection, resetPlayerAnimation } from './actions/playerActions';
 import { coinCollected, resetLeveLProgress } from './actions/levelActions';
 import { hasWallCollision, findCollidingCoin } from './helpers/collisionHelpers';
 import { canChangeDirection } from './helpers/movementHelpers';
 
-import DebugInfo from './components/DebugInfo';
 import GameInfo from './components/GameInfo';
 import GameBoard from './components/GameBoard';
 import GameAudio from './components/GameAudio';
+import TextLayer from './components/TextLayer';
 
 import './App.css';
 
@@ -31,9 +31,14 @@ class App extends React.Component {
     if(collidingCoin) {
       this.props.coinCollected(collidingCoin);
       this.props.increaseScore(10)
+      // Player has collected all coins, end the level
+      if(coins.length === 0) {
+        this.props.levelCompleted();
+        this.props.resetPlayerAnimation();
+      }
     }
 
-    if(this.props.gameInfo.gameStarted && !this.props.gameInfo.showGameOver) {
+    if(this.props.gameInfo.gameStarted && (!this.props.gameInfo.showGameOver && !this.props.gameInfo.levelCompleted)) {
       this.animationRequest = window.requestAnimationFrame(this.runGame);
     }
   }
@@ -47,8 +52,9 @@ class App extends React.Component {
   }
 
   componentDidUpdate = (oldProps) => {
-    const { gameStarted } = this.props.gameInfo;
-    const { gameStarted: oldGameStarted } = oldProps.gameInfo;
+    const { gameInfo: {gameStarted} } = this.props;
+    const { gameInfo: {gameStarted: oldGameStarted} } = oldProps;
+    
     if(gameStarted && !oldGameStarted) {
       this.animationRequest = window.requestAnimationFrame(this.runGame);
     }
@@ -78,10 +84,6 @@ class App extends React.Component {
         //down
         this.onMovePressed('DOWN');
         break;
-      case 69:
-        // e
-        this.props.switchDebug();
-        break;
       case 82:
         // r
         this.props.resetGame();
@@ -104,13 +106,14 @@ class App extends React.Component {
           <h1>Hac-Man</h1>
         </header>
         <GameAudio gameInfo={this.props.gameInfo} />
+        <TextLayer
+          level={this.props.levels}
+          showStageName={this.props.gameInfo.showStageName}
+        />
         <GameBoard
           player={this.props.player}
           level={this.props.levels}
-        />
-        <DebugInfo
           gameInfo={this.props.gameInfo}
-          player={this.props.player}
         />
         <GameInfo gameInfo={this.props.gameInfo} />
       </div>
@@ -123,7 +126,6 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-  switchDebug: () => dispatch(switchDebug()),
   resetGame: () => dispatch(resetGame()),
   startGame: () => dispatch(startGame()),
   directionPressed: (direction) => dispatch(directionPressed(direction)),
@@ -134,6 +136,8 @@ const mapDispatchToProps = dispatch => ({
   coinCollected: (coin) => dispatch(coinCollected(coin)),
   increaseScore: (score) => dispatch(increaseScore(score)),
   resetLeveLProgress: () => dispatch(resetLeveLProgress()),
+  levelCompleted: () => dispatch(levelCompleted()),
+  resetPlayerAnimation: () => dispatch(resetPlayerAnimation()),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);
