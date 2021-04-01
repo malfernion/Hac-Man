@@ -2,6 +2,19 @@ import React from 'react';
 
 export default class GameBackground extends React.Component {
 
+    shouldComponentUpdate = (nextProps) => {
+        return this.props.gameInfo.levelCompleted !== nextProps.gameInfo.levelCompleted;
+    }
+
+    componentDidUpdate = (oldProps) => {
+        const { gameInfo: {levelCompleted} } = this.props;
+        const { gameInfo: {levelCompleted: oldLevelCompleted} } = oldProps;
+    
+        if(levelCompleted && !oldLevelCompleted) {
+            this.flashWalls();
+        }
+    }
+
     clearCanvas() {
         this.ctx.clearRect(0, 0, this.props.boardSize, this.props.boardSize);
     }
@@ -33,9 +46,9 @@ export default class GameBackground extends React.Component {
         this.ctx.stroke();
     }
     
-    drawWalls(wallRenderWidth, walls) {
+    drawWalls(wallRenderWidth, walls, wallColour) {
         this.ctx.lineWidth = '3';
-        this.ctx.strokeStyle = 'blue';
+        this.ctx.strokeStyle = wallColour;
         this.ctx.fillStyle = 'black';
         
         for (const wall of walls) {
@@ -44,11 +57,24 @@ export default class GameBackground extends React.Component {
         }
     }
 
-    doDrawing(wallRenderWidth, walls) {
+    doDrawing(wallRenderWidth, walls, wallColour = 'blue') {
         if(this.ctx) {
             this.clearCanvas();
-            this.drawWalls(wallRenderWidth, walls);
+            this.drawWalls(wallRenderWidth, walls, wallColour);
         }
+    }
+
+    flashWalls(sequence = ['blue', 'pink', 'blue', 'pink', 'blue', 'pink', 'blue', 'pink', 'blue', 'pink', 'blue', 'pink', 'blue']) {
+        const {level: { wallRenderWidth, currentLevel: {walls}}} = this.props;
+
+        const singleFlash = () => {
+            if(sequence.length) {
+                this.doDrawing(wallRenderWidth, walls, sequence.pop());
+                setTimeout(singleFlash, 150);
+            }
+        }
+
+        singleFlash();
     }
 
     shouldComponentUpdate(nextProps) {

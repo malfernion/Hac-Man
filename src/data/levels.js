@@ -1,6 +1,6 @@
 export const levels = [
     {
-        name: 'Baphomets\' maze',
+        name: 'Chapter 1:\nEnter The Dungeon:\nThe Trials Of Hac-Man',
         walls: [
             [0, 18, 1, 11],
             [5, 10, 1, 4],

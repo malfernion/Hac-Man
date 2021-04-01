@@ -5,7 +5,7 @@
   overflow: hidden;
   display: grid;
   grid-template-columns: 1fr 812px 1fr;
-  grid-template-rows: 50px 1fr 50px;
+  grid-template-rows: 50px 812px 50px;
   grid-gap: 25px;
   grid-template-areas: "header header header"
                        "left main right"
@@ -50,11 +50,7 @@ canvas {
 }
 
 .game-info {
-  grid-area: left
-}
-
-.debug-info {
-  grid-area: right
+  grid-area: footer
 }
 
 .App-link {
@@ -66,24 +62,57 @@ canvas {
   color: yellow;
   border: 2px solid yellow;
   border-radius: 5px;
-  max-height: 750px;
-  margin-top: 30px;
+  height: 100%;
   margin-left: auto;
   margin-right: auto;
   display: grid;
-  grid-template-rows: 10% 1fr;
   grid-gap: 20px;
-}
-
-.Info h2 {
-  text-align: left;
-  padding-left: 50px;
-  font-style: italic;
 }
 
 .Info .Info-content {
   display: grid;
-  grid-template-rows: 1fr 1fr 1fr;
-  padding-bottom: 15px;
-  padding-top: 20px;
+  grid-template-columns: 1fr 1fr 1fr;
+  margin-left: 20px;
+  margin-right: 20px;
+  padding-top: 15px;
+}
+
+.text-overlay {
+  position: absolute;
+  width: 50%;
+  margin-left: 25%;
+  margin-right: 25%;
+  top: 40%;
+  z-index: 2;
+}
+
+.text-overlay-content {
+  color: red;
+  font-size: 48px;
+  text-align: center;
+  max-width: 40%;
+  white-space: pre;
+}
+
+.intro-hide {
+  animation: intro-hide 5s ease 1;
+  opacity: 0;
+}
+
+@keyframes intro-hide {
+  0% {
+    filter: blur(0);
+    opacity: 1;
+  }
+  80% {
+    filter: blur(0);
+    opacity: 1;
+  }
+  90% {
+    opacity: 0.9;
+  }
+  100% {
+    filter: blur(50px);
+    opacity: 0;
+  }
 }

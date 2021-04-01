@@ -68,6 +68,10 @@ export default (state = Object.assign({}, defaultState), action) => {
             });
         case 'RESET_PLAYER':
             return Object.assign({}, defaultState);
+        case 'RESET_PLAYER_ANIMATION':
+            return Object.assign({}, state, {
+                spriteCords: defaultState.spriteCords,
+            });
         default:
             return state;
     }

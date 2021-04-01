@@ -49,8 +49,14 @@ export default class GameBoard extends React.Component {
 
         return (
             <section className="game-board">
-                <GameBackground level={this.props.level}></GameBackground>
-                <canvas id="active-canvas" width={boardSize} height={boardSize}>
+                <GameBackground
+                    level={this.props.level}
+                    gameInfo={this.props.gameInfo}>
+                </GameBackground>
+                <canvas
+                    id="active-canvas"
+                    width={boardSize}
+                    height={boardSize}>
                     <span>Sorry, the game requires canvas support which you don't appear to have..</span>
                 </canvas>
             </section>

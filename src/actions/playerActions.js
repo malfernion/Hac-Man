@@ -30,3 +30,9 @@ export const resetPlayer = () => {
         type: 'RESET_PLAYER',
     };
 };
+
+export const resetPlayerAnimation = () => {
+    return {
+        type: 'RESET_PLAYER_ANIMATION',
+    };
+};

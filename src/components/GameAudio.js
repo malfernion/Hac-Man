@@ -37,7 +37,6 @@ class GameAudio extends React.Component {
     }
 
     playWacka() {
-        // this.siren.pause();
         this.wacka1.pause();
         this.wacka1.currentTime = 0;
         this.wacka2.pause();
@@ -54,7 +53,6 @@ class GameAudio extends React.Component {
 
         this.siren = new Audio();
         this.siren.src = require('../assets/siren.wav');
-        console.log('setting up siren');
         this.siren.addEventListener('ended', () => {
             if(this.props.gameInfo.gameStarted) {
                 this.siren.pause();
