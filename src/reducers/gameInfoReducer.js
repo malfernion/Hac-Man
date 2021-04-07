@@ -7,6 +7,7 @@ const defaultState = {
     playingIntro: false,
     showStageName: true,
     levelCompleted: false,
+    enemyStarted: false,
 };
 
 export default (state = Object.assign({}, defaultState), action) => {
@@ -42,6 +43,10 @@ export default (state = Object.assign({}, defaultState), action) => {
             return Object.assign({}, state, {
                 gameStarted: false,
                 levelCompleted: true,
+            });
+        case 'ENEMY_START':
+            return Object.assign({}, state, {
+                enemyStarted: true,
             });
         default:
             return state;

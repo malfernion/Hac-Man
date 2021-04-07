@@ -49,3 +49,9 @@ export const levelCompleted = () => {
         type: 'LEVEL_COMPLETED',
     };
 };
+
+export const enemyStart = () => {
+    return {
+        type: 'ENEMY_START',
+    }
+}

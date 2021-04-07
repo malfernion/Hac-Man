@@ -1,7 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { resetGame, startGame, increaseScore, levelCompleted } from './actions/gameInfoActions';
+import { resetGame, startGame, increaseScore, levelCompleted, enemyStart } from './actions/gameInfoActions';
 import { directionPressed, movePlayer, resetPlayer, playerCollided, changeToNextDirection, resetPlayerAnimation } from './actions/playerActions';
+import { changeEnemyDirection, moveEnemy, resetEnemies } from './actions/enemiesActions';
 import { coinCollected, resetLeveLProgress } from './actions/levelActions';
 import { hasWallCollision, findCollidingCoin } from './helpers/collisionHelpers';
 import { canChangeDirection } from './helpers/movementHelpers';
@@ -19,7 +20,20 @@ class App extends React.Component {
     this.frameStart = timestamp;
     const {levels: {currentLevel: { walls, coins }}} = this.props;
 
-    // moving logic
+    // Enemy moving logic
+    // Start the enemy some time after the game starts
+    if(!this.props.gameInfo.enemyStarted && timestamp > 8000) {
+      console.log('enemy start!');
+      this.props.enemyStart();
+    }
+    // Loop through the enemies so they can have their turns
+    // Enemy gets target tile
+    // Enemy gets possible moves (no turning around, or moving into walls)
+    // If only one possible move continue on path
+    // Else, enemy calculates distance to target for each possible move
+    // Change to direction with least distance to target
+
+    // Player moving logic
     if(canChangeDirection(this.props.player, this.props.player.nextDirection, walls, timeElapsed)) {
       this.props.changeToNextDirection();
     }
@@ -35,6 +49,7 @@ class App extends React.Component {
       if(coins.length === 0) {
         this.props.levelCompleted();
         this.props.resetPlayerAnimation();
+        this.props.resetEnemies();
       }
     }
 
@@ -89,6 +104,7 @@ class App extends React.Component {
         this.props.resetGame();
         this.props.resetPlayer();
         this.props.resetLeveLProgress();
+        this.props.resetEnemies();
         if(this.animationRequest) {
           window.cancelAnimationFrame(this.animationRequest);
         }
@@ -138,6 +154,10 @@ const mapDispatchToProps = dispatch => ({
   resetLeveLProgress: () => dispatch(resetLeveLProgress()),
   levelCompleted: () => dispatch(levelCompleted()),
   resetPlayerAnimation: () => dispatch(resetPlayerAnimation()),
+  enemyStart: () => dispatch(enemyStart()),
+  changeEnemyDirection: () => dispatch(changeEnemyDirection()),
+  moveEnemy: () => dispatch(moveEnemy()),
+  resetEnemies: () => dispatch(resetEnemies()),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);
