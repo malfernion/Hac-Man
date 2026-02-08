@@ -176,7 +176,7 @@ export function canChangeDirection(character, nextDirection, walls, duration) {
     const alignedPosition = alignPositionToRailIfClose(character.position, nextDirection, true);
     const { axis, fixedAxis, step } = getAxisDetails(nextDirection);
     const startCoord = alignedPosition[axis];
-    const moveAmount = Math.max(tileSize, character.speed * duration);
+    const moveAmount = tileSize;
     const desiredCoord = startCoord + step * moveAmount;
     const size = character.size === undefined ? tileSize - 1 : character.size;
 
