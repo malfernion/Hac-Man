@@ -4,6 +4,16 @@
 // learn more: https://github.com/testing-library/jest-dom
 import '@testing-library/jest-dom';
 
+Object.defineProperty(global.HTMLMediaElement.prototype, 'play', {
+  configurable: true,
+  value: jest.fn(),
+});
+
+Object.defineProperty(global.HTMLMediaElement.prototype, 'pause', {
+  configurable: true,
+  value: jest.fn(),
+});
+
 Object.defineProperty(HTMLCanvasElement.prototype, 'getContext', {
   writable: true,
   value: () => ({

@@ -14,6 +14,9 @@ import TextLayer from './components/TextLayer';
 import './App.css';
 
 class App extends React.Component {
+  swipeStart = null;
+  swipeMinDistance = 24;
+
   runGame = (timestamp) => {
     let timeElapsed = this.frameStart === undefined ? 0 : (timestamp - this.frameStart) / 1000;
     this.frameStart = timestamp;
@@ -111,6 +114,52 @@ class App extends React.Component {
     }
   }
 
+  handleSwipeStart = (event) => {
+    if(event.cancelable) {
+      event.preventDefault();
+    }
+    const point = event.touches ? event.touches[0] : event;
+    this.swipeStart = {
+      x: point.clientX,
+      y: point.clientY,
+    };
+  }
+
+  handleSwipeEnd = (event) => {
+    if(event.cancelable) {
+      event.preventDefault();
+    }
+    if(!this.swipeStart) {
+      return;
+    }
+    const point = event.changedTouches ? event.changedTouches[0] : event;
+    const deltaX = point.clientX - this.swipeStart.x;
+    const deltaY = point.clientY - this.swipeStart.y;
+    const distance = Math.hypot(deltaX, deltaY);
+    if(distance >= this.swipeMinDistance) {
+      if(Math.abs(deltaX) > Math.abs(deltaY)) {
+        this.onMovePressed(deltaX > 0 ? 'RIGHT' : 'LEFT');
+      } else {
+        this.onMovePressed(deltaY > 0 ? 'DOWN' : 'UP');
+      }
+    }
+    this.swipeStart = null;
+  }
+
+  handleSwipeCancel = () => {
+    this.swipeStart = null;
+  }
+
+  handleResetPressed = () => {
+    this.props.resetGame();
+    this.props.resetPlayer();
+    this.props.resetLeveLProgress();
+    if(this.animationRequest) {
+      window.cancelAnimationFrame(this.animationRequest);
+    }
+    this.frameStart = undefined;
+  }
+
   render() {
     return (
       <div className="App" onKeyDown={this.handleKeyDown} tabIndex="0">
@@ -122,11 +171,55 @@ class App extends React.Component {
           level={this.props.levels}
           showStageName={this.props.gameInfo.showStageName}
         />
-        <GameBoard
-          player={this.props.player}
-          level={this.props.levels}
-          gameInfo={this.props.gameInfo}
-        />
+        <div
+          className="game-board-wrapper"
+          data-testid="game-board-wrapper"
+          onPointerDown={this.handleSwipeStart}
+          onPointerUp={this.handleSwipeEnd}
+          onPointerCancel={this.handleSwipeCancel}
+          onTouchStart={this.handleSwipeStart}
+          onTouchEnd={this.handleSwipeEnd}
+        >
+          <GameBoard
+            player={this.props.player}
+            level={this.props.levels}
+            gameInfo={this.props.gameInfo}
+          />
+          <div className="touch-overlay" aria-hidden="true">
+            <button
+              type="button"
+              className="touch-zone touch-zone--up"
+              aria-label="Move up"
+              onPointerDown={() => this.onMovePressed('UP')}
+            />
+            <button
+              type="button"
+              className="touch-zone touch-zone--down"
+              aria-label="Move down"
+              onPointerDown={() => this.onMovePressed('DOWN')}
+            />
+            <button
+              type="button"
+              className="touch-zone touch-zone--left"
+              aria-label="Move left"
+              onPointerDown={() => this.onMovePressed('LEFT')}
+            />
+            <button
+              type="button"
+              className="touch-zone touch-zone--right"
+              aria-label="Move right"
+              onPointerDown={() => this.onMovePressed('RIGHT')}
+            />
+            <button
+              type="button"
+              className="touch-reset"
+              aria-label="Reset game"
+              onPointerDown={this.handleResetPressed}
+            >
+              Reset
+            </button>
+          </div>
+        </div>
         <GameInfo gameInfo={this.props.gameInfo} />
       </div>
     );
