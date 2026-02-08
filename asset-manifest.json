@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/Hac-Man/static/css/main.060feef7.css",
-    "main.js": "/Hac-Man/static/js/main.2f366c16.js",
+    "main.js": "/Hac-Man/static/js/main.a95e040f.js",
     "static/media/game_start.wav": "/Hac-Man/static/media/game_start.91d7a56437791b5cd727.wav",
     "static/media/siren.wav": "/Hac-Man/static/media/siren.8a8e553d333cd0ef622d.wav",
     "static/media/sprites_16_x_16.png": "/Hac-Man/static/media/sprites_16_x_16.316057ad509237e69ec3.png",
@@ -9,10 +9,10 @@
     "static/media/munch_2.wav": "/Hac-Man/static/media/munch_2.5ac1e9b13d40899045dc.wav",
     "index.html": "/Hac-Man/index.html",
     "main.060feef7.css.map": "/Hac-Man/static/css/main.060feef7.css.map",
-    "main.2f366c16.js.map": "/Hac-Man/static/js/main.2f366c16.js.map"
+    "main.a95e040f.js.map": "/Hac-Man/static/js/main.a95e040f.js.map"
   },
   "entrypoints": [
     "static/css/main.060feef7.css",
-    "static/js/main.2f366c16.js"
+    "static/js/main.a95e040f.js"
   ]
 }
