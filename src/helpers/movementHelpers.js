@@ -93,6 +93,17 @@ const getRailMoveResult = (character, direction, duration, walls) => {
         const distanceToBoundary = step > 0 ? boundary - coord : coord - boundary;
 
         if(distanceToBoundary === 0) {
+            const nextTileIndex = tileIndex + step;
+            const nextTileBlocked = direction === 'LEFT' || direction === 'RIGHT'
+                ? isTileBlocked(nextTileIndex, fixedTileIndex, walls)
+                : isTileBlocked(fixedTileIndex, nextTileIndex, walls);
+
+            if(nextTileBlocked) {
+                blocked = true;
+                remaining = 0;
+                break;
+            }
+
             coord += step * tileIndexEpsilon;
             remaining = Math.max(0, remaining - tileIndexEpsilon);
             continue;
