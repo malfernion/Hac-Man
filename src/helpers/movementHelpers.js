@@ -2,51 +2,9 @@ const boardSize = 812;
 const tileSize = 28;
 const railCenterOffset = tileSize / 2;
 const railSnapThreshold = tileSize * 0.3;
-const tileIndexEpsilon = 1e-6;
-const blockedTilesCache = new WeakMap();
 
 const getClosestRailCoord = (coord) =>
     Math.round((coord - railCenterOffset) / tileSize) * tileSize + railCenterOffset;
-
-const getTileCenter = (tileIndex) => tileIndex * tileSize + railCenterOffset;
-
-const getTileIndexForDirection = (coord, direction) => {
-    if(direction === 'LEFT' || direction === 'UP') {
-        return Math.floor((coord + tileIndexEpsilon) / tileSize);
-    }
-    if(direction === 'RIGHT' || direction === 'DOWN') {
-        return Math.floor((coord - tileIndexEpsilon) / tileSize);
-    }
-    return Math.round((coord - railCenterOffset) / tileSize);
-};
-
-const buildBlockedTiles = (walls) => {
-    if(blockedTilesCache.has(walls)) {
-        return blockedTilesCache.get(walls);
-    }
-
-    const blockedTiles = new Set();
-    for (const wall of walls) {
-        const startX = Math.floor(wall[0] / tileSize);
-        const endX = Math.ceil((wall[0] + wall[2]) / tileSize) - 1;
-        const startY = Math.floor(wall[1] / tileSize);
-        const endY = Math.ceil((wall[1] + wall[3]) / tileSize) - 1;
-
-        for (let x = startX; x <= endX; x += 1) {
-            for (let y = startY; y <= endY; y += 1) {
-                blockedTiles.add(`${x},${y}`);
-            }
-        }
-    }
-
-    blockedTilesCache.set(walls, blockedTiles);
-    return blockedTiles;
-};
-
-const isTileBlocked = (tileX, tileY, walls) => {
-    const blockedTiles = buildBlockedTiles(walls);
-    return blockedTiles.has(`${tileX},${tileY}`);
-};
 
 const alignPositionToRail = (position, direction) => {
     const aligned = Object.assign({}, position);
@@ -68,6 +26,88 @@ const getDistanceFromRail = (position, direction) => {
     return Infinity;
 };
 
+const alignPositionToRailIfClose = (position, direction, force = false) => {
+    const distance = getDistanceFromRail(position, direction);
+    if(force || distance <= railSnapThreshold) {
+        return alignPositionToRail(position, direction);
+    }
+    return Object.assign({}, position);
+};
+
+const getAxisDetails = (direction) => {
+    const horizontal = direction === 'LEFT' || direction === 'RIGHT';
+    return {
+        axis: horizontal ? 'x' : 'y',
+        fixedAxis: horizontal ? 'y' : 'x',
+        step: direction === 'LEFT' || direction === 'UP' ? -1 : 1,
+    };
+};
+
+const snapStopCoordToRail = (coord, step) => {
+    const snapped = getClosestRailCoord(coord);
+    if(step > 0) {
+        return Math.min(snapped, coord);
+    }
+    return Math.max(snapped, coord);
+};
+
+const clampAxisMovement = (startCoord, desiredCoord, fixedCoord, size, axis, step, walls) => {
+    let coord = desiredCoord;
+    let blocked = false;
+    const halfSize = size / 2;
+
+    for (const wall of walls) {
+        const wallLowerX = wall[0];
+        const wallLowerY = wall[1];
+        const wallUpperX = wallLowerX + wall[2];
+        const wallUpperY = wallLowerY + wall[3];
+
+        if(axis === 'x') {
+            const characterLowerY = fixedCoord - halfSize;
+            const characterUpperY = fixedCoord + halfSize;
+            if(characterUpperY <= wallLowerY || characterLowerY >= wallUpperY) {
+                continue;
+            }
+
+            if(step > 0) {
+                const boundary = wallLowerX - halfSize;
+                if(boundary >= startCoord && boundary < coord && boundary <= desiredCoord) {
+                    coord = snapStopCoordToRail(boundary, step);
+                    blocked = true;
+                }
+            } else {
+                const boundary = wallUpperX + halfSize;
+                if(boundary <= startCoord && boundary > coord && boundary >= desiredCoord) {
+                    coord = snapStopCoordToRail(boundary, step);
+                    blocked = true;
+                }
+            }
+        } else {
+            const characterLowerX = fixedCoord - halfSize;
+            const characterUpperX = fixedCoord + halfSize;
+            if(characterUpperX <= wallLowerX || characterLowerX >= wallUpperX) {
+                continue;
+            }
+
+            if(step > 0) {
+                const boundary = wallLowerY - halfSize;
+                if(boundary >= startCoord && boundary < coord && boundary <= desiredCoord) {
+                    coord = snapStopCoordToRail(boundary, step);
+                    blocked = true;
+                }
+            } else {
+                const boundary = wallUpperY + halfSize;
+                if(boundary <= startCoord && boundary > coord && boundary >= desiredCoord) {
+                    coord = snapStopCoordToRail(boundary, step);
+                    blocked = true;
+                }
+            }
+        }
+    }
+
+    return { coord, blocked };
+};
+
 const getRailMoveResult = (character, direction, duration, walls) => {
     const { position, speed } = character;
     if(!direction || duration === 0) {
@@ -75,69 +115,26 @@ const getRailMoveResult = (character, direction, duration, walls) => {
     }
 
     const moveAmount = Math.max(0, speed * duration);
-    const alignedPosition = alignPositionToRail(position, direction);
-    let coord = direction === 'LEFT' || direction === 'RIGHT' ? alignedPosition.x : alignedPosition.y;
-    const fixedCoord = direction === 'LEFT' || direction === 'RIGHT'
-        ? alignedPosition.y
-        : alignedPosition.x;
-    const fixedTileIndex = getTileIndexForDirection(fixedCoord, direction);
-    const step = direction === 'LEFT' || direction === 'UP' ? -1 : 1;
+    const alignedPosition = alignPositionToRailIfClose(position, direction);
+    const { axis, fixedAxis, step } = getAxisDetails(direction);
+    const startCoord = alignedPosition[axis];
+    const desiredCoord = startCoord + step * moveAmount;
+    const size = character.size === undefined ? tileSize - 1 : character.size;
 
-    let remaining = moveAmount;
-    let blocked = false;
-
-    while(remaining > 0) {
-        const tileIndex = getTileIndexForDirection(coord, direction);
-        const tileCenter = getTileCenter(tileIndex);
-        const boundary = tileCenter + step * (tileSize / 2);
-        const distanceToBoundary = step > 0 ? boundary - coord : coord - boundary;
-
-        if(distanceToBoundary === 0) {
-            const nextTileIndex = tileIndex + step;
-            const nextTileBlocked = direction === 'LEFT' || direction === 'RIGHT'
-                ? isTileBlocked(nextTileIndex, fixedTileIndex, walls)
-                : isTileBlocked(fixedTileIndex, nextTileIndex, walls);
-
-            if(nextTileBlocked) {
-                blocked = true;
-                remaining = 0;
-                break;
-            }
-
-            coord += step * tileIndexEpsilon;
-            remaining = Math.max(0, remaining - tileIndexEpsilon);
-            continue;
-        }
-
-        if(distanceToBoundary >= remaining) {
-            coord += step * remaining;
-            remaining = 0;
-            break;
-        }
-
-        coord = boundary;
-        remaining -= distanceToBoundary;
-
-        const nextTileIndex = tileIndex + step;
-        const nextTileBlocked = direction === 'LEFT' || direction === 'RIGHT'
-            ? isTileBlocked(nextTileIndex, fixedTileIndex, walls)
-            : isTileBlocked(fixedTileIndex, nextTileIndex, walls);
-
-        if(nextTileBlocked) {
-            blocked = true;
-            remaining = 0;
-            break;
-        }
-    }
+    const result = clampAxisMovement(
+        startCoord,
+        desiredCoord,
+        alignedPosition[fixedAxis],
+        size,
+        axis,
+        step,
+        walls,
+    );
 
     const nextPosition = Object.assign({}, alignedPosition);
-    if(direction === 'LEFT' || direction === 'RIGHT') {
-        nextPosition.x = coord;
-    } else {
-        nextPosition.y = coord;
-    }
+    nextPosition[axis] = result.coord;
 
-    return { position: nextPosition, blocked };
+    return { position: nextPosition, blocked: result.blocked };
 };
 
 /**
@@ -159,17 +156,13 @@ export function getNextCharacterRailPosition(character, direction, duration, wal
  * @param {*} position the position to check and transform if needed
  */
 export function checkAndTransformIntoBounds(position) {
-    if(position.x > boardSize) {
-        position.x -= boardSize;
-    } else if (position.x < 0) {
-        position.x +=boardSize;
-    }
+    const wrap = (coord) => {
+        const wrapped = ((coord % boardSize) + boardSize) % boardSize;
+        return wrapped;
+    };
 
-    if(position.y > boardSize) {
-        position.y -= boardSize;
-    } else if (position.y < 0) {
-        position.y += boardSize;
-    }
+    position.x = wrap(position.x);
+    position.y = wrap(position.y);
 };
 
 /**
@@ -188,21 +181,22 @@ export function canChangeDirection(character, nextDirection, walls, duration) {
         return false;
     }
 
-    const alignedPosition = alignPositionToRail(character.position, nextDirection);
-    const movingCoord = nextDirection === 'LEFT' || nextDirection === 'RIGHT'
-        ? alignedPosition.x
-        : alignedPosition.y;
-    const fixedCoord = nextDirection === 'LEFT' || nextDirection === 'RIGHT'
-        ? alignedPosition.y
-        : alignedPosition.x;
-    const movingTileIndex = getTileIndexForDirection(movingCoord, nextDirection);
-    const fixedTileIndex = getTileIndexForDirection(fixedCoord, nextDirection);
-    const step = nextDirection === 'LEFT' || nextDirection === 'UP' ? -1 : 1;
-    const nextTileIndex = movingTileIndex + step;
+    const alignedPosition = alignPositionToRailIfClose(character.position, nextDirection, true);
+    const { axis, fixedAxis, step } = getAxisDetails(nextDirection);
+    const startCoord = alignedPosition[axis];
+    const moveAmount = tileSize;
+    const desiredCoord = startCoord + step * moveAmount;
+    const size = character.size === undefined ? tileSize - 1 : character.size;
 
-    const nextTileBlocked = nextDirection === 'LEFT' || nextDirection === 'RIGHT'
-        ? isTileBlocked(nextTileIndex, fixedTileIndex, walls)
-        : isTileBlocked(fixedTileIndex, nextTileIndex, walls);
+    const result = clampAxisMovement(
+        startCoord,
+        desiredCoord,
+        alignedPosition[fixedAxis],
+        size,
+        axis,
+        step,
+        walls,
+    );
 
-    return !nextTileBlocked;
+    return !result.blocked;
 }

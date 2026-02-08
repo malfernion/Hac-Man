@@ -3,6 +3,7 @@ import { render, fireEvent } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import App from './App';
 import configureStore from './store';
+import { levels } from './data/levels';
 
 const AppComponent = App.WrappedComponent || App;
 
@@ -135,4 +136,71 @@ test('runGame wraps positions before checking coin collisions', () => {
 
   expect(props.coinCollected).toHaveBeenCalled();
   expect(props.increaseScore).toHaveBeenCalledWith(10);
+});
+
+test('runGame can complete the first level by collecting every coin', () => {
+  const boardSize = 812;
+  const drawingScale = boardSize / 29;
+  const scaleItem = (item) => item.map((value) => value * drawingScale);
+  const scaledLevel = {
+    walls: levels[0].walls.map(scaleItem),
+    coins: levels[0].coins.map(scaleItem),
+    pills: levels[0].pills.map(scaleItem),
+  };
+
+  const props = {
+    player: {
+      position: { x: 0, y: 0 },
+      size: 27,
+      speed: 120,
+      direction: null,
+      nextDirection: null,
+    },
+    gameInfo: {
+      poweredUp: false,
+      powerModeEndsAt: null,
+      gameStarted: false,
+      showGameOver: false,
+      levelCompleted: false,
+      playingIntro: false,
+    },
+    levels: {
+      currentLevel: {
+        walls: scaledLevel.walls,
+        coins: [...scaledLevel.coins],
+        pills: scaledLevel.pills,
+      },
+    },
+    powerModeEnded: jest.fn(),
+    changeToNextDirection: jest.fn(),
+    movePlayer: jest.fn((timeElapsed, position) => {
+      props.player.position = position;
+    }),
+    playerCollided: jest.fn(),
+    pillCollected: jest.fn(),
+    coinCollected: jest.fn((coin) => {
+      const index = props.levels.currentLevel.coins.findIndex(
+        (item) => item[0] === coin[0] && item[1] === coin[1],
+      );
+      if(index !== -1) {
+        props.levels.currentLevel.coins.splice(index, 1);
+      }
+    }),
+    increaseScore: jest.fn(),
+    powerModeStarted: jest.fn(),
+    levelCompleted: jest.fn(),
+    resetPlayerAnimation: jest.fn(),
+  };
+
+  const app = new AppComponent(props);
+  app.frameStart = 0;
+
+  const coinsToCollect = [...scaledLevel.coins];
+  for (const coin of coinsToCollect) {
+    props.player.position = { x: coin[0], y: coin[1] };
+    app.runGame(0);
+  }
+
+  expect(props.levels.currentLevel.coins.length).toBe(0);
+  expect(props.levelCompleted).toHaveBeenCalled();
 });

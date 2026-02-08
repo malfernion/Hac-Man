@@ -29,7 +29,7 @@ describe('movementHelpers', () => {
 
     const result = getNextCharacterRailPosition(character, 'RIGHT', 1, walls);
 
-    expect(result.position).toEqual({ x: 28, y: 14 });
+    expect(result.position).toEqual({ x: 14, y: 14 });
     expect(result.blocked).toBe(true);
   });
 
@@ -63,12 +63,12 @@ describe('movementHelpers', () => {
       speed: 28,
     };
     const walls = [
-      [28, 0, 28, 28],
+      [56, 0, 28, 28],
     ];
 
     const result = getNextCharacterRailPosition(character, 'RIGHT', 1, walls);
 
-    expect(result.position).toEqual({ x: 28, y: 14 });
+    expect(result.position).toEqual({ x: 42, y: 14 });
     expect(result.blocked).toBe(true);
   });
 
@@ -123,6 +123,46 @@ describe('movementHelpers', () => {
     };
     const walls = [
       [56, 0, 28, 28],
+    ];
+
+    expect(canChangeDirection(character, 'RIGHT', walls, 0.1)).toBe(true);
+  });
+
+  it('snaps to rails when close but preserves off-rail alignment when far', () => {
+    const character = {
+      position: { x: 14, y: 54 },
+      speed: 10,
+    };
+
+    const result = getNextCharacterRailPosition(character, 'RIGHT', 1, []);
+
+    expect(result.position.y).toBe(54);
+  });
+
+  it('blocks movement when a wall intersects the character bounds mid-tile', () => {
+    const character = {
+      position: { x: 14, y: 14 },
+      speed: 120,
+      size: 27,
+    };
+    const walls = [
+      [40, 0, 10, 28],
+    ];
+
+    const result = getNextCharacterRailPosition(character, 'RIGHT', 1, walls);
+
+    expect(result.position.x).toBe(14);
+    expect(result.blocked).toBe(true);
+  });
+
+  it('allows changing direction when the next tile remains clear of the character bounds', () => {
+    const character = {
+      position: { x: 14, y: 14 },
+      speed: 120,
+      size: 27,
+    };
+    const walls = [
+      [90, 0, 10, 28],
     ];
 
     expect(canChangeDirection(character, 'RIGHT', walls, 0.1)).toBe(true);
