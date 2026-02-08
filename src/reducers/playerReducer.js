@@ -63,7 +63,9 @@ const playerReducer = (state = Object.assign({}, defaultState), action) => {
         case 'COLLIDED':
             // move the player back to their previous position and stop them moving
             return Object.assign({}, state, {
-                position: getNextCharacterPositionForDirection(state, state.direction, -action.timeElapsed),
+                position: action.position
+                    ? action.position
+                    : getNextCharacterPositionForDirection(state, state.direction, -action.timeElapsed),
                 direction: null
             });
         case 'RESET_PLAYER':

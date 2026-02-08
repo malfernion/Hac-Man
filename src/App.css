@@ -171,6 +171,7 @@ canvas {
   margin-right: 25%;
   top: 40%;
   z-index: 2;
+  pointer-events: none;
 }
 
 .text-overlay-content {
