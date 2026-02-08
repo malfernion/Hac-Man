@@ -11,6 +11,13 @@ export const coinCollected = (coin) => {
     };
 };
 
+export const pillCollected = (pill) => {
+    return {
+        type: 'PILL_COLLECTED',
+        pill
+    };
+};
+
 export const resetLeveLProgress = () => {
     return {
         type: 'RESET_LEVEL_PROGRESS',

@@ -26,6 +26,19 @@ export const ghostKilled = () => {
     };
 };
 
+export const powerModeStarted = (endsAt) => {
+    return {
+        type: 'POWER_MODE_STARTED',
+        endsAt,
+    };
+};
+
+export const powerModeEnded = () => {
+    return {
+        type: 'POWER_MODE_ENDED',
+    };
+};
+
 export const resetGame = () => {
     return {
         type: 'RESET_GAME',

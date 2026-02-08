@@ -5,13 +5,14 @@ const drawingScale = boardSize/29;
 const scaleItem = (item) => item.map(itemParam => itemParam*drawingScale);
 
 const scaledLevels = levels.map(level => {
-    let { name, characters, walls, coins } = level;
+    let { name, characters, walls, coins, pills } = level;
 
     return {
         name,
         characters,
         walls: walls.map(scaleItem),
-        coins: coins.map(scaleItem)
+        coins: coins.map(scaleItem),
+        pills: pills.map(scaleItem),
     }
 });
 
@@ -38,6 +39,10 @@ export default (state = Object.assign({}, defaultState), action) => {
             const newState = JSON.parse(JSON.stringify(state));
             newState.currentLevel.coins.splice(state.currentLevel.coins.indexOf(action.coin), 1);
             return newState;
+        case 'PILL_COLLECTED':
+            const pillState = JSON.parse(JSON.stringify(state));
+            pillState.currentLevel.pills.splice(state.currentLevel.pills.indexOf(action.pill), 1);
+            return pillState;
         default:
             return state;
     }
