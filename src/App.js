@@ -29,14 +29,16 @@ class App extends React.Component {
     }
 
     // moving logic
+    let effectiveDirection = this.props.player.direction;
     if(canChangeDirection(this.props.player, this.props.player.nextDirection, walls, timeElapsed)) {
       this.props.changeToNextDirection();
+      effectiveDirection = this.props.player.nextDirection;
     }
-    const nextPosition = this.props.player.direction
-      ? getNextCharacterPositionForDirection(this.props.player, this.props.player.direction, timeElapsed)
+    const nextPosition = effectiveDirection
+      ? getNextCharacterPositionForDirection(this.props.player, effectiveDirection, timeElapsed)
       : this.props.player.position;
     if(
-      this.props.player.direction &&
+      effectiveDirection &&
       hasWallCollision({ position: nextPosition, size: this.props.player.size }, walls)
     ) {
       this.props.playerCollided(0, this.props.player.position);
