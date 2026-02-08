@@ -73,6 +73,9 @@ test('runGame uses accepted nextDirection for collision pre-check', () => {
         pills: [],
       },
     },
+    ghosts: {
+      ghosts: [],
+    },
     powerModeEnded: jest.fn(),
     changeToNextDirection: jest.fn(),
     movePlayer: jest.fn(),
@@ -83,6 +86,12 @@ test('runGame uses accepted nextDirection for collision pre-check', () => {
     powerModeStarted: jest.fn(),
     levelCompleted: jest.fn(),
     resetPlayerAnimation: jest.fn(),
+    moveGhosts: jest.fn(),
+    resetGhosts: jest.fn(),
+    lostLife: jest.fn(),
+    ghostKilled: jest.fn(),
+    ghostEaten: jest.fn(),
+    resetPlayer: jest.fn(),
   };
 
   const app = new AppComponent(props);
@@ -118,6 +127,9 @@ test('runGame wraps positions before checking coin collisions', () => {
         pills: [],
       },
     },
+    ghosts: {
+      ghosts: [],
+    },
     powerModeEnded: jest.fn(),
     changeToNextDirection: jest.fn(),
     movePlayer: jest.fn(),
@@ -128,6 +140,12 @@ test('runGame wraps positions before checking coin collisions', () => {
     powerModeStarted: jest.fn(),
     levelCompleted: jest.fn(),
     resetPlayerAnimation: jest.fn(),
+    moveGhosts: jest.fn(),
+    resetGhosts: jest.fn(),
+    lostLife: jest.fn(),
+    ghostKilled: jest.fn(),
+    ghostEaten: jest.fn(),
+    resetPlayer: jest.fn(),
   };
 
   const app = new AppComponent(props);
@@ -171,6 +189,9 @@ test('runGame can complete the first level by collecting every coin', () => {
         pills: scaledLevel.pills,
       },
     },
+    ghosts: {
+      ghosts: [],
+    },
     powerModeEnded: jest.fn(),
     changeToNextDirection: jest.fn(),
     movePlayer: jest.fn((timeElapsed, position) => {
@@ -190,6 +211,12 @@ test('runGame can complete the first level by collecting every coin', () => {
     powerModeStarted: jest.fn(),
     levelCompleted: jest.fn(),
     resetPlayerAnimation: jest.fn(),
+    moveGhosts: jest.fn(),
+    resetGhosts: jest.fn(),
+    lostLife: jest.fn(),
+    ghostKilled: jest.fn(),
+    ghostEaten: jest.fn(),
+    resetPlayer: jest.fn(),
   };
 
   const app = new AppComponent(props);

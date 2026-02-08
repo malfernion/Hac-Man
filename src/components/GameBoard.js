@@ -23,6 +23,41 @@ export default class GameBoard extends React.Component {
         }
     }
 
+    drawGhosts(ctx, ghosts, poweredUp) {
+        const frightenedColor = '#2c6ed5';
+        const eyeColor = '#f8f8ff';
+        const pupilColor = '#1b1b1b';
+
+        for (const ghost of ghosts) {
+            const radius = ghost.size / 2;
+            const color = poweredUp ? frightenedColor : ghost.color;
+            ctx.fillStyle = color;
+            ctx.beginPath();
+            ctx.arc(ghost.position.x, ghost.position.y, radius, Math.PI, 0, false);
+            ctx.lineTo(ghost.position.x + radius, ghost.position.y + radius);
+            ctx.lineTo(ghost.position.x - radius, ghost.position.y + radius);
+            ctx.closePath();
+            ctx.fill();
+
+            const eyeOffsetX = radius * 0.4;
+            const eyeOffsetY = radius * -0.2;
+            const eyeRadius = radius * 0.22;
+            const pupilRadius = eyeRadius * 0.55;
+
+            ctx.fillStyle = eyeColor;
+            ctx.beginPath();
+            ctx.arc(ghost.position.x - eyeOffsetX, ghost.position.y + eyeOffsetY, eyeRadius, 0, Math.PI * 2);
+            ctx.arc(ghost.position.x + eyeOffsetX, ghost.position.y + eyeOffsetY, eyeRadius, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.fillStyle = pupilColor;
+            ctx.beginPath();
+            ctx.arc(ghost.position.x - eyeOffsetX, ghost.position.y + eyeOffsetY, pupilRadius, 0, Math.PI * 2);
+            ctx.arc(ghost.position.x + eyeOffsetX, ghost.position.y + eyeOffsetY, pupilRadius, 0, Math.PI * 2);
+            ctx.fill();
+        }
+    }
+
     drawPills(ctx, pills) {
         ctx.lineWidth = '1';
         ctx.strokeStyle ='#ffd27a';
@@ -36,9 +71,11 @@ export default class GameBoard extends React.Component {
 
     doDrawing() {
         const {level: { currentLevel: {coins, pills}}} = this.props;
+        const { gameInfo: { poweredUp }, ghosts } = this.props;
         if(this.activeCtx) {
             this.clearCanvas(this.activeCtx);
             this.drawCharacter(this.activeCtx, this.props.player);
+            this.drawGhosts(this.activeCtx, ghosts, poweredUp);
             this.drawCoins(this.activeCtx, coins);
             this.drawPills(this.activeCtx, pills);
         }
