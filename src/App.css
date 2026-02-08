@@ -71,7 +71,7 @@ canvas {
 
 .Info .Info-content {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: repeat(4, 1fr);
   margin-left: 20px;
   margin-right: 20px;
   padding-top: 15px;

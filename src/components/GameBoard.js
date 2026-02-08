@@ -23,12 +23,24 @@ export default class GameBoard extends React.Component {
         }
     }
 
+    drawPills(ctx, pills) {
+        ctx.lineWidth = '1';
+        ctx.strokeStyle ='#ffd27a';
+        ctx.fillStyle = '#ffd27a';
+        for (const pill of pills) {
+            ctx.beginPath();
+            ctx.arc(pill[0], pill[1], 6, 0, Math.PI * 2, true);
+            ctx.fill();
+        }
+    }
+
     doDrawing() {
-        const {level: { currentLevel: {coins}}} = this.props;
+        const {level: { currentLevel: {coins, pills}}} = this.props;
         if(this.activeCtx) {
             this.clearCanvas(this.activeCtx);
             this.drawCharacter(this.activeCtx, this.props.player);
             this.drawCoins(this.activeCtx, coins);
+            this.drawPills(this.activeCtx, pills);
         }
     }
 

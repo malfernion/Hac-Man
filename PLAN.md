@@ -36,7 +36,7 @@ This document reviews the current codebase and proposes a phased, test-driven pl
 
 ### Missing / Incomplete Features
 - Ghosts are not implemented (data has `ghosts: []`, but no rendering or AI).
-- Power pills (energizers) do not exist.
+- Power pills (energizers) are present, but only implement collection and a timed power state (no ghost interactions yet).
 - No explicit game-over or life-loss flow besides a `showGameOver` flag and `lives` counter.
 - No level progression beyond level 1.
 
@@ -48,8 +48,18 @@ This document reviews the current codebase and proposes a phased, test-driven pl
 
 ## Forward-Looking Completion Plan (TDD-Oriented)
 
+### Progress Snapshot (as of latest commit)
+- Phase 0: ⚠️ In progress — tests being added now.
+- Phase 1: ⚠️ Partial — power pills are modeled/rendered; entity model + ghosts pending.
+- Phase 2: ⚠️ Partial — power pill collision + powered state timer done; ghost interactions pending.
+- Phase 3: ⬜ Not started.
+- Phase 4: ⬜ Not started.
+- Phase 5: ⬜ Not started.
+
 ### Phase 0 — Test Harness & Baselines (TDD Foundation)
 **Goal:** Establish reliable unit tests for core logic to support feature expansion.
+
+**Status:** In progress.
 
 **Work items**
 - Add Jest tests for helper functions:
@@ -65,6 +75,10 @@ This document reviews the current codebase and proposes a phased, test-driven pl
 - `findCollidingCoin` returns correct coin or undefined.
 - `checkAndTransformIntoBounds` wraps on all sides.
 - Reducer state transitions (action -> expected state).
+
+**Progress**
+- ✅ Added tests for collision helpers and game/level reducers.
+- ✅ Added movement helper tests and player reducer coverage.
 
 ---
 
@@ -166,4 +180,3 @@ This document reviews the current codebase and proposes a phased, test-driven pl
 - Game flow includes intro, play, power mode, frightened ghosts, level completion, and game over.
 - Unit tests cover core movement, collision, state transitions, and scoring.
 - Level progression and UI states are complete.
-

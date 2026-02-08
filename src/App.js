@@ -1,9 +1,9 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { resetGame, startGame, increaseScore, levelCompleted } from './actions/gameInfoActions';
+import { resetGame, startGame, increaseScore, levelCompleted, powerModeStarted, powerModeEnded } from './actions/gameInfoActions';
 import { directionPressed, movePlayer, resetPlayer, playerCollided, changeToNextDirection, resetPlayerAnimation } from './actions/playerActions';
-import { coinCollected, resetLeveLProgress } from './actions/levelActions';
-import { hasWallCollision, findCollidingCoin } from './helpers/collisionHelpers';
+import { coinCollected, pillCollected, resetLeveLProgress } from './actions/levelActions';
+import { hasWallCollision, findCollidingCoin, findCollidingPill } from './helpers/collisionHelpers';
 import { canChangeDirection } from './helpers/movementHelpers';
 
 import GameInfo from './components/GameInfo';
@@ -17,7 +17,13 @@ class App extends React.Component {
   runGame = (timestamp) => {
     let timeElapsed = this.frameStart === undefined ? 0 : (timestamp - this.frameStart) / 1000;
     this.frameStart = timestamp;
-    const {levels: {currentLevel: { walls, coins }}} = this.props;
+    const {levels: {currentLevel: { walls, coins, pills }}} = this.props;
+    const { gameInfo: { poweredUp, powerModeEndsAt } } = this.props;
+    const powerModeDurationMs = 10000;
+
+    if(poweredUp && powerModeEndsAt !== null && timestamp >= powerModeEndsAt) {
+      this.props.powerModeEnded();
+    }
 
     // moving logic
     if(canChangeDirection(this.props.player, this.props.player.nextDirection, walls, timeElapsed)) {
@@ -28,6 +34,12 @@ class App extends React.Component {
       this.props.playerCollided(timeElapsed);
     }
     const collidingCoin = findCollidingCoin(this.props.player, coins);
+    const collidingPill = findCollidingPill(this.props.player, pills);
+    if(collidingPill) {
+      this.props.pillCollected(collidingPill);
+      this.props.increaseScore(50);
+      this.props.powerModeStarted(timestamp + powerModeDurationMs);
+    }
     if(collidingCoin) {
       this.props.coinCollected(collidingCoin);
       this.props.increaseScore(10)
@@ -134,7 +146,10 @@ const mapDispatchToProps = dispatch => ({
   playerCollided: (tickDuration) => dispatch(playerCollided(tickDuration)),
   changeToNextDirection: () => dispatch(changeToNextDirection()),
   coinCollected: (coin) => dispatch(coinCollected(coin)),
+  pillCollected: (pill) => dispatch(pillCollected(pill)),
   increaseScore: (score) => dispatch(increaseScore(score)),
+  powerModeStarted: (endsAt) => dispatch(powerModeStarted(endsAt)),
+  powerModeEnded: () => dispatch(powerModeEnded()),
   resetLeveLProgress: () => dispatch(resetLeveLProgress()),
   levelCompleted: () => dispatch(levelCompleted()),
   resetPlayerAnimation: () => dispatch(resetPlayerAnimation()),

@@ -7,6 +7,8 @@ const defaultState = {
     playingIntro: false,
     showStageName: true,
     levelCompleted: false,
+    poweredUp: false,
+    powerModeEndsAt: null,
 };
 
 export default (state = Object.assign({}, defaultState), action) => {
@@ -26,6 +28,16 @@ export default (state = Object.assign({}, defaultState), action) => {
         case 'PLAYER_DIED':
             return Object.assign({}, state, {
                 showGameOver: true,
+            });
+        case 'POWER_MODE_STARTED':
+            return Object.assign({}, state, {
+                poweredUp: true,
+                powerModeEndsAt: action.endsAt,
+            });
+        case 'POWER_MODE_ENDED':
+            return Object.assign({}, state, {
+                poweredUp: false,
+                powerModeEndsAt: null,
             });
         case 'RESET_GAME':
             return Object.assign({}, defaultState);

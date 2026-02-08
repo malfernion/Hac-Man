@@ -49,19 +49,37 @@ export function hasWallCollision (character, walls) {
  * @param {*} character the character to check for collisions
  * @param {*} walls the array of coins to check for collisions against
  */
-export function findCollidingCoin (character, coins) {
+function findCollidingPoint(character, points) {
     const { position, size } = character;
     const characterLowerX = position.x - size/2;
     const characterUpperX = position.x + size/2;
     const characterLowerY = position.y - size/2;
     const characterUpperY = position.y + size/2;
 
-    for (const coin of coins) {
-        const cx = coin[0];
-        const cy = coin[1];
+    for (const point of points) {
+        const cx = point[0];
+        const cy = point[1];
 
         if((cx > characterLowerX && cx < characterUpperX) && (cy > characterLowerY && cy < characterUpperY)) {
-            return coin;
+            return point;
         }
     }
+}
+
+/**
+ * Checks for collisions between the passed character and coins of the current level, returning the colliding coin
+ * @param {*} character the character to check for collisions
+ * @param {*} walls the array of coins to check for collisions against
+ */
+export function findCollidingCoin (character, coins) {
+    return findCollidingPoint(character, coins);
+}
+
+/**
+ * Checks for collisions between the passed character and power pills of the current level, returning the colliding pill
+ * @param {*} character the character to check for collisions
+ * @param {*} pills the array of pills to check for collisions against
+ */
+export function findCollidingPill (character, pills) {
+    return findCollidingPoint(character, pills);
 }
