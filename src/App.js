@@ -17,6 +17,18 @@ class App extends React.Component {
   swipeStart = null;
   swipeMinDistance = 24;
 
+  componentDidMount() {
+    if(process.env.NODE_ENV !== 'production') {
+      window.__HACMAN_APP__ = this;
+    }
+  }
+
+  componentWillUnmount() {
+    if(process.env.NODE_ENV !== 'production') {
+      delete window.__HACMAN_APP__;
+    }
+  }
+
   runGame = (timestamp) => {
     let timeElapsed = this.frameStart === undefined ? 0 : (timestamp - this.frameStart) / 1000;
     this.frameStart = timestamp;
@@ -61,7 +73,7 @@ class App extends React.Component {
       this.props.coinCollected(collidingCoin);
       this.props.increaseScore(10)
       // Player has collected all coins, end the level
-      if(coins.length === 0) {
+      if(coins.length <= 1) {
         this.props.levelCompleted();
         this.props.resetPlayerAnimation();
       }
