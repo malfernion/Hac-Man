@@ -24,20 +24,22 @@ export function areAnyCordsWithinWall (cords, wall) {
  */
 export function hasWallCollision (character, walls) {
     const { position, size } = character;
-    const boundingCords = [
-        // tl
-        [position.x - size/2, position.y - size/2],
-        // tr
-        [position.x + size/2, position.y - size/2],
-        // bl
-        [position.x - size/2, position.y + size/2],
-        // br
-        [position.x + size/2, position.y + size/2]
-    ];
+    const characterLowerX = position.x - size/2;
+    const characterUpperX = position.x + size/2;
+    const characterLowerY = position.y - size/2;
+    const characterUpperY = position.y + size/2;
 
-    //check if the player bounding cords are within any wall
+    //check if the player bounding box overlaps any wall
     for (const wall of walls) {
-        if(areAnyCordsWithinWall(boundingCords, wall)) {
+        const wallLowerX = wall[0];
+        const wallLowerY = wall[1];
+        const wallUpperX = wallLowerX + wall[2];
+        const wallUpperY = wallLowerY + wall[3];
+
+        const overlapX = characterLowerX < wallUpperX && characterUpperX > wallLowerX;
+        const overlapY = characterLowerY < wallUpperY && characterUpperY > wallLowerY;
+
+        if(overlapX && overlapY) {
             return true;
         }
     }
