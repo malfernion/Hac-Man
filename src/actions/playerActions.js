@@ -11,10 +11,11 @@ export const changeToNextDirection = () => {
     };
 };
 
-export const movePlayer = (timeElapsed) => {
+export const movePlayer = (timeElapsed, position) => {
     return {
         type: 'MOVE',
         timeElapsed,
+        position,
     };
 };
 

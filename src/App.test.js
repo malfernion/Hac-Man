@@ -90,5 +90,5 @@ test('runGame uses accepted nextDirection for collision pre-check', () => {
 
   expect(props.changeToNextDirection).toHaveBeenCalled();
   expect(props.playerCollided).not.toHaveBeenCalled();
-  expect(props.movePlayer).toHaveBeenCalledWith(1);
+  expect(props.movePlayer).toHaveBeenCalledWith(1, { x: 42, y: 40 });
 });

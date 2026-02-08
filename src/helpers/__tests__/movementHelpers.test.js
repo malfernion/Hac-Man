@@ -1,4 +1,9 @@
-import { canChangeDirection, checkAndTransformIntoBounds, getNextCharacterPositionForDirection } from '../movementHelpers';
+import {
+  canChangeDirection,
+  checkAndTransformIntoBounds,
+  getNextCharacterPositionForDirection,
+  getNextCharacterRailPosition,
+} from '../movementHelpers';
 
 describe('movementHelpers', () => {
   it('calculates the next position for each direction', () => {
@@ -7,10 +12,37 @@ describe('movementHelpers', () => {
       speed: 5,
     };
 
-    expect(getNextCharacterPositionForDirection(character, 'UP', 1)).toEqual({ x: 10, y: 5 });
-    expect(getNextCharacterPositionForDirection(character, 'DOWN', 1)).toEqual({ x: 10, y: 15 });
-    expect(getNextCharacterPositionForDirection(character, 'LEFT', 2)).toEqual({ x: 0, y: 10 });
-    expect(getNextCharacterPositionForDirection(character, 'RIGHT', 2)).toEqual({ x: 20, y: 10 });
+    expect(getNextCharacterPositionForDirection(character, 'UP', 1)).toEqual({ x: 14, y: 5 });
+    expect(getNextCharacterPositionForDirection(character, 'DOWN', 1)).toEqual({ x: 14, y: 15 });
+    expect(getNextCharacterPositionForDirection(character, 'LEFT', 2)).toEqual({ x: 0, y: 14 });
+    expect(getNextCharacterPositionForDirection(character, 'RIGHT', 2)).toEqual({ x: 20, y: 14 });
+  });
+
+  it('moves along rails without crossing into blocked tiles', () => {
+    const character = {
+      position: { x: 14, y: 14 },
+      speed: 28,
+    };
+    const walls = [
+      [28, 0, 28, 28],
+    ];
+
+    const result = getNextCharacterRailPosition(character, 'RIGHT', 1, walls);
+
+    expect(result.position).toEqual({ x: 28, y: 14 });
+    expect(result.blocked).toBe(true);
+  });
+
+  it('moves across multiple tiles when clear', () => {
+    const character = {
+      position: { x: 14, y: 14 },
+      speed: 56,
+    };
+
+    const result = getNextCharacterRailPosition(character, 'RIGHT', 1, []);
+
+    expect(result.position).toEqual({ x: 70, y: 14 });
+    expect(result.blocked).toBe(false);
   });
 
   it('wraps positions that move beyond the board bounds', () => {
@@ -23,7 +55,7 @@ describe('movementHelpers', () => {
 
   it('returns false when there is no next direction', () => {
     const character = {
-      position: { x: 5, y: 5 },
+      position: { x: 14, y: 14 },
       speed: 10,
       size: 2,
     };
@@ -34,25 +66,36 @@ describe('movementHelpers', () => {
 
   it('prevents direction changes when a wall blocks the next move', () => {
     const character = {
-      position: { x: 5, y: 5 },
+      position: { x: 14, y: 14 },
       speed: 10,
       size: 2,
     };
     const walls = [
-      [4, 0, 4, 10],
+      [28, 0, 28, 28],
     ];
+
+    expect(canChangeDirection(character, 'RIGHT', walls, 0.1)).toBe(false);
+  });
+
+  it('prevents direction changes when not aligned to a rail', () => {
+    const character = {
+      position: { x: 14, y: 3 },
+      speed: 10,
+      size: 2,
+    };
+    const walls = [];
 
     expect(canChangeDirection(character, 'RIGHT', walls, 0.1)).toBe(false);
   });
 
   it('allows direction changes when the next move is clear', () => {
     const character = {
-      position: { x: 5, y: 5 },
+      position: { x: 14, y: 14 },
       speed: 10,
       size: 2,
     };
     const walls = [
-      [10, 0, 4, 10],
+      [56, 0, 28, 28],
     ];
 
     expect(canChangeDirection(character, 'RIGHT', walls, 0.1)).toBe(true);

@@ -3,8 +3,8 @@ import { connect } from 'react-redux';
 import { resetGame, startGame, increaseScore, levelCompleted, powerModeStarted, powerModeEnded } from './actions/gameInfoActions';
 import { directionPressed, movePlayer, resetPlayer, playerCollided, changeToNextDirection, resetPlayerAnimation } from './actions/playerActions';
 import { coinCollected, pillCollected, resetLeveLProgress } from './actions/levelActions';
-import { hasWallCollision, findCollidingCoin, findCollidingPill } from './helpers/collisionHelpers';
-import { canChangeDirection, getNextCharacterPositionForDirection } from './helpers/movementHelpers';
+import { findCollidingCoin, findCollidingPill } from './helpers/collisionHelpers';
+import { canChangeDirection, getNextCharacterRailPosition } from './helpers/movementHelpers';
 
 import GameInfo from './components/GameInfo';
 import GameBoard from './components/GameBoard';
@@ -34,22 +34,21 @@ class App extends React.Component {
       this.props.changeToNextDirection();
       effectiveDirection = this.props.player.nextDirection;
     }
-    const nextPosition = effectiveDirection
-      ? getNextCharacterPositionForDirection(this.props.player, effectiveDirection, timeElapsed)
-      : this.props.player.position;
-    if(
-      effectiveDirection &&
-      hasWallCollision({ position: nextPosition, size: this.props.player.size }, walls)
-    ) {
-      this.props.playerCollided(0, this.props.player.position);
+    const nextMove = effectiveDirection
+      ? getNextCharacterRailPosition(this.props.player, effectiveDirection, timeElapsed, walls)
+      : { position: this.props.player.position, blocked: false };
+
+    if(nextMove.blocked) {
+      this.props.playerCollided(0, nextMove.position);
     } else {
-      this.props.movePlayer(timeElapsed);
-      if(hasWallCollision(this.props.player, walls)) {
-        this.props.playerCollided(timeElapsed);
-      }
+      this.props.movePlayer(timeElapsed, nextMove.position);
     }
-    const collidingCoin = findCollidingCoin(this.props.player, coins);
-    const collidingPill = findCollidingPill(this.props.player, pills);
+
+    const playerForCollision = Object.assign({}, this.props.player, {
+      position: nextMove.position,
+    });
+    const collidingCoin = findCollidingCoin(playerForCollision, coins);
+    const collidingPill = findCollidingPill(playerForCollision, pills);
     if(collidingPill) {
       this.props.pillCollected(collidingPill);
       this.props.increaseScore(50);
@@ -271,9 +270,9 @@ const mapDispatchToProps = dispatch => ({
   resetGame: () => dispatch(resetGame()),
   startGame: () => dispatch(startGame()),
   directionPressed: (direction) => dispatch(directionPressed(direction)),
-  movePlayer: (tickDuration) => dispatch(movePlayer(tickDuration)),
+  movePlayer: (tickDuration, position) => dispatch(movePlayer(tickDuration, position)),
   resetPlayer: () => dispatch(resetPlayer()),
-  playerCollided: (tickDuration) => dispatch(playerCollided(tickDuration)),
+  playerCollided: (tickDuration, position) => dispatch(playerCollided(tickDuration, position)),
   changeToNextDirection: () => dispatch(changeToNextDirection()),
   coinCollected: (coin) => dispatch(coinCollected(coin)),
   pillCollected: (pill) => dispatch(pillCollected(pill)),
