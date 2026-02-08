@@ -45,6 +45,18 @@ describe('movementHelpers', () => {
     expect(result.blocked).toBe(false);
   });
 
+  it('advances past a boundary without stalling when the next tile is open', () => {
+    const character = {
+      position: { x: 28, y: 14 },
+      speed: 28,
+    };
+
+    const result = getNextCharacterRailPosition(character, 'RIGHT', 1, []);
+
+    expect(result.position.x).toBeGreaterThan(28);
+    expect(result.blocked).toBe(false);
+  });
+
   it('wraps positions that move beyond the board bounds', () => {
     const position = { x: 820, y: -5 };
     checkAndTransformIntoBounds(position);

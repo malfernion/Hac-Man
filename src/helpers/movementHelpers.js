@@ -92,6 +92,12 @@ const getRailMoveResult = (character, direction, duration, walls) => {
         const boundary = tileCenter + step * (tileSize / 2);
         const distanceToBoundary = step > 0 ? boundary - coord : coord - boundary;
 
+        if(distanceToBoundary === 0) {
+            coord += step * tileIndexEpsilon;
+            remaining = Math.max(0, remaining - tileIndexEpsilon);
+            continue;
+        }
+
         if(distanceToBoundary >= remaining) {
             coord += step * remaining;
             remaining = 0;
