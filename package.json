@@ -4,15 +4,20 @@
   "private": true,
   "homepage": "https://malfernion.github.io/Hac-Man/",
   "dependencies": {
-    "@testing-library/jest-dom": "^4.2.4",
-    "@testing-library/react": "^9.5.0",
-    "@testing-library/user-event": "^7.2.1",
-    "react": "^16.13.1",
-    "react-dom": "^16.13.1",
+    "@testing-library/jest-dom": "^6.4.2",
+    "@testing-library/react": "^14.2.2",
+    "@testing-library/user-event": "^14.5.2",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "react-redux": "^7.2.0",
-    "react-scripts": "3.4.1",
+    "react-scripts": "5.0.1",
     "redux": "^4.0.5",
     "redux-thunk": "^2.3.0"
+  },
+  "devDependencies": {
+    "@testing-library/dom": "^10.4.0",
+    "@types/react": "^18.2.79",
+    "typescript": "^5.5.4"
   },
   "scripts": {
     "start": "react-scripts start",
