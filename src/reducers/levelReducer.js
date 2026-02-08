@@ -25,7 +25,7 @@ const defaultState = {
 };
 
 
-export default (state = Object.assign({}, defaultState), action) => {
+const levelReducer = (state = Object.assign({}, defaultState), action) => {
     switch(action.type) {
         case 'PROGRESS_LEVEL':
             const newLevelNumber = ++state.currentLevelNumber;
@@ -46,4 +46,6 @@ export default (state = Object.assign({}, defaultState), action) => {
         default:
             return state;
     }
-}
+};
+
+export default levelReducer;

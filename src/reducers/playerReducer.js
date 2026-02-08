@@ -35,7 +35,7 @@ const defaultState = {
     framesPerSprite: 3
 };
 
-export default (state = Object.assign({}, defaultState), action) => {
+const playerReducer = (state = Object.assign({}, defaultState), action) => {
     switch(action.type) {
         case 'DIRECTION_PRESSED':
             const { direction } = state;
@@ -75,4 +75,6 @@ export default (state = Object.assign({}, defaultState), action) => {
         default:
             return state;
     }
-}
+};
+
+export default playerReducer;
