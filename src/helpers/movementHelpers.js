@@ -43,6 +43,14 @@ const getAxisDetails = (direction) => {
     };
 };
 
+const snapStopCoordToRail = (coord, step) => {
+    const snapped = getClosestRailCoord(coord);
+    if(step > 0) {
+        return Math.min(snapped, coord);
+    }
+    return Math.max(snapped, coord);
+};
+
 const clampAxisMovement = (startCoord, desiredCoord, fixedCoord, size, axis, step, walls) => {
     let coord = desiredCoord;
     let blocked = false;
@@ -64,13 +72,13 @@ const clampAxisMovement = (startCoord, desiredCoord, fixedCoord, size, axis, ste
             if(step > 0) {
                 const boundary = wallLowerX - halfSize;
                 if(boundary >= startCoord && boundary < coord && boundary <= desiredCoord) {
-                    coord = boundary;
+                    coord = snapStopCoordToRail(boundary, step);
                     blocked = true;
                 }
             } else {
                 const boundary = wallUpperX + halfSize;
                 if(boundary <= startCoord && boundary > coord && boundary >= desiredCoord) {
-                    coord = boundary;
+                    coord = snapStopCoordToRail(boundary, step);
                     blocked = true;
                 }
             }
@@ -84,13 +92,13 @@ const clampAxisMovement = (startCoord, desiredCoord, fixedCoord, size, axis, ste
             if(step > 0) {
                 const boundary = wallLowerY - halfSize;
                 if(boundary >= startCoord && boundary < coord && boundary <= desiredCoord) {
-                    coord = boundary;
+                    coord = snapStopCoordToRail(boundary, step);
                     blocked = true;
                 }
             } else {
                 const boundary = wallUpperY + halfSize;
                 if(boundary <= startCoord && boundary > coord && boundary >= desiredCoord) {
-                    coord = boundary;
+                    coord = snapStopCoordToRail(boundary, step);
                     blocked = true;
                 }
             }

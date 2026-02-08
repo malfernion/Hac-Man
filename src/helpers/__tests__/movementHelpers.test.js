@@ -29,7 +29,7 @@ describe('movementHelpers', () => {
 
     const result = getNextCharacterRailPosition(character, 'RIGHT', 1, walls);
 
-    expect(result.position).toEqual({ x: 14.5, y: 14 });
+    expect(result.position).toEqual({ x: 14, y: 14 });
     expect(result.blocked).toBe(true);
   });
 
@@ -68,7 +68,7 @@ describe('movementHelpers', () => {
 
     const result = getNextCharacterRailPosition(character, 'RIGHT', 1, walls);
 
-    expect(result.position).toEqual({ x: 42.5, y: 14 });
+    expect(result.position).toEqual({ x: 42, y: 14 });
     expect(result.blocked).toBe(true);
   });
 
@@ -151,7 +151,7 @@ describe('movementHelpers', () => {
 
     const result = getNextCharacterRailPosition(character, 'RIGHT', 1, walls);
 
-    expect(result.position.x).toBe(26.5);
+    expect(result.position.x).toBe(14);
     expect(result.blocked).toBe(true);
   });
 
