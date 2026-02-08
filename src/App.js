@@ -4,7 +4,7 @@ import { resetGame, startGame, increaseScore, levelCompleted, powerModeStarted, 
 import { directionPressed, movePlayer, resetPlayer, playerCollided, changeToNextDirection, resetPlayerAnimation } from './actions/playerActions';
 import { coinCollected, pillCollected, resetLeveLProgress } from './actions/levelActions';
 import { hasWallCollision, findCollidingCoin, findCollidingPill } from './helpers/collisionHelpers';
-import { canChangeDirection } from './helpers/movementHelpers';
+import { canChangeDirection, getNextCharacterPositionForDirection } from './helpers/movementHelpers';
 
 import GameInfo from './components/GameInfo';
 import GameBoard from './components/GameBoard';
@@ -32,9 +32,19 @@ class App extends React.Component {
     if(canChangeDirection(this.props.player, this.props.player.nextDirection, walls, timeElapsed)) {
       this.props.changeToNextDirection();
     }
-    this.props.movePlayer(timeElapsed);
-    if(hasWallCollision(this.props.player, walls)) {
-      this.props.playerCollided(timeElapsed);
+    const nextPosition = this.props.player.direction
+      ? getNextCharacterPositionForDirection(this.props.player, this.props.player.direction, timeElapsed)
+      : this.props.player.position;
+    if(
+      this.props.player.direction &&
+      hasWallCollision({ position: nextPosition, size: this.props.player.size }, walls)
+    ) {
+      this.props.playerCollided(0, this.props.player.position);
+    } else {
+      this.props.movePlayer(timeElapsed);
+      if(hasWallCollision(this.props.player, walls)) {
+        this.props.playerCollided(timeElapsed);
+      }
     }
     const collidingCoin = findCollidingCoin(this.props.player, coins);
     const collidingPill = findCollidingPill(this.props.player, pills);
@@ -115,6 +125,9 @@ class App extends React.Component {
   }
 
   handleSwipeStart = (event) => {
+    if(event.type === 'pointerdown' && event.pointerType === 'touch') {
+      return;
+    }
     if(event.cancelable) {
       event.preventDefault();
     }
@@ -126,6 +139,9 @@ class App extends React.Component {
   }
 
   handleSwipeEnd = (event) => {
+    if(event.type === 'pointerup' && event.pointerType === 'touch') {
+      return;
+    }
     if(event.cancelable) {
       event.preventDefault();
     }
@@ -148,6 +164,20 @@ class App extends React.Component {
 
   handleSwipeCancel = () => {
     this.swipeStart = null;
+  }
+
+  handlePointerMovePressed = (direction, event) => {
+    if(event && event.pointerType === 'touch') {
+      return;
+    }
+    this.onMovePressed(direction);
+  }
+
+  handlePointerResetPressed = (event) => {
+    if(event && event.pointerType === 'touch') {
+      return;
+    }
+    this.handleResetPressed();
   }
 
   handleResetPressed = () => {
@@ -190,31 +220,36 @@ class App extends React.Component {
               type="button"
               className="touch-zone touch-zone--up"
               aria-label="Move up"
-              onPointerDown={() => this.onMovePressed('UP')}
+              onPointerDown={(event) => this.handlePointerMovePressed('UP', event)}
+              onTouchStart={() => this.onMovePressed('UP')}
             />
             <button
               type="button"
               className="touch-zone touch-zone--down"
               aria-label="Move down"
-              onPointerDown={() => this.onMovePressed('DOWN')}
+              onPointerDown={(event) => this.handlePointerMovePressed('DOWN', event)}
+              onTouchStart={() => this.onMovePressed('DOWN')}
             />
             <button
               type="button"
               className="touch-zone touch-zone--left"
               aria-label="Move left"
-              onPointerDown={() => this.onMovePressed('LEFT')}
+              onPointerDown={(event) => this.handlePointerMovePressed('LEFT', event)}
+              onTouchStart={() => this.onMovePressed('LEFT')}
             />
             <button
               type="button"
               className="touch-zone touch-zone--right"
               aria-label="Move right"
-              onPointerDown={() => this.onMovePressed('RIGHT')}
+              onPointerDown={(event) => this.handlePointerMovePressed('RIGHT', event)}
+              onTouchStart={() => this.onMovePressed('RIGHT')}
             />
             <button
               type="button"
               className="touch-reset"
               aria-label="Reset game"
-              onPointerDown={this.handleResetPressed}
+              onPointerDown={this.handlePointerResetPressed}
+              onTouchStart={this.handleResetPressed}
             >
               Reset
             </button>

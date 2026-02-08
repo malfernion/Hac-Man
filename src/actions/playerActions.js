@@ -18,10 +18,11 @@ export const movePlayer = (timeElapsed) => {
     };
 };
 
-export const playerCollided = (timeElapsed) => {
+export const playerCollided = (timeElapsed, position) => {
     return {
         type: 'COLLIDED',
         timeElapsed,
+        position,
     };
 };
 
