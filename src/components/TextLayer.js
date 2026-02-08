@@ -9,8 +9,8 @@ class TextLayer extends React.Component {
     };
 
     componentDidUpdate(oldProps) {
-        const { showStageName, level: { currentLevel: {name}} } = this.props;
-        const { showStageName: oldShowStageName, level: { currentLevel: {oldName}} } = oldProps;
+        const { showStageName, level: { currentLevel: { name } } } = this.props;
+        const { showStageName: oldShowStageName, level: { currentLevel: { name: oldName } } } = oldProps;
 
         if(showStageName && !oldShowStageName) {
             this.setState({
@@ -21,6 +21,12 @@ class TextLayer extends React.Component {
         if(!showStageName && oldShowStageName) {
             this.setState({
                 isLeaving: true,
+            });
+        }
+
+        if(name !== oldName) {
+            this.setState({
+                text: name,
             });
         }
     };

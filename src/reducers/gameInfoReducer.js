@@ -11,7 +11,7 @@ const defaultState = {
     powerModeEndsAt: null,
 };
 
-export default (state = Object.assign({}, defaultState), action) => {
+const gameInfoReducer = (state = Object.assign({}, defaultState), action) => {
     switch(action.type) {
         case 'INCREASE_SCORE':
             return Object.assign({}, state, {
@@ -58,4 +58,6 @@ export default (state = Object.assign({}, defaultState), action) => {
         default:
             return state;
     }
-}
+};
+
+export default gameInfoReducer;

@@ -2,10 +2,6 @@ import React from 'react';
 
 export default class GameBackground extends React.Component {
 
-    shouldComponentUpdate = (nextProps) => {
-        return this.props.gameInfo.levelCompleted !== nextProps.gameInfo.levelCompleted;
-    }
-
     componentDidUpdate = (oldProps) => {
         const { gameInfo: {levelCompleted} } = this.props;
         const { gameInfo: {levelCompleted: oldLevelCompleted} } = oldProps;
@@ -78,7 +74,10 @@ export default class GameBackground extends React.Component {
     }
 
     shouldComponentUpdate(nextProps) {
-        return this.props.level.currentLevelNumber !== nextProps.level.currentLevelNumber;
+        return (
+            this.props.level.currentLevelNumber !== nextProps.level.currentLevelNumber ||
+            this.props.gameInfo.levelCompleted !== nextProps.gameInfo.levelCompleted
+        );
     }
 
     componentDidMount() {
