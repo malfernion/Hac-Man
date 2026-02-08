@@ -52,7 +52,9 @@ const playerReducer = (state = Object.assign({}, defaultState), action) => {
                 nextDirection: null
             });
         case 'MOVE':
-            let newPosition = getNextCharacterPositionForDirection(state, state.direction, action.timeElapsed);
+            let newPosition = action.position
+                ? Object.assign({}, action.position)
+                : getNextCharacterPositionForDirection(state, state.direction, action.timeElapsed);
             checkAndTransformIntoBounds(newPosition);
             
             return Object.assign({}, state, {

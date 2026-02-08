@@ -90,5 +90,49 @@ test('runGame uses accepted nextDirection for collision pre-check', () => {
 
   expect(props.changeToNextDirection).toHaveBeenCalled();
   expect(props.playerCollided).not.toHaveBeenCalled();
-  expect(props.movePlayer).toHaveBeenCalledWith(1);
+  expect(props.movePlayer).toHaveBeenCalledWith(1, { x: 42, y: 40 });
+});
+
+test('runGame wraps positions before checking coin collisions', () => {
+  const props = {
+    player: {
+      position: { x: 810, y: 14 },
+      size: 10,
+      speed: 10,
+      direction: 'RIGHT',
+      nextDirection: null,
+    },
+    gameInfo: {
+      poweredUp: false,
+      powerModeEndsAt: null,
+      gameStarted: false,
+      showGameOver: false,
+      levelCompleted: false,
+      playingIntro: false,
+    },
+    levels: {
+      currentLevel: {
+        walls: [],
+        coins: [[8, 14]],
+        pills: [],
+      },
+    },
+    powerModeEnded: jest.fn(),
+    changeToNextDirection: jest.fn(),
+    movePlayer: jest.fn(),
+    playerCollided: jest.fn(),
+    pillCollected: jest.fn(),
+    coinCollected: jest.fn(),
+    increaseScore: jest.fn(),
+    powerModeStarted: jest.fn(),
+    levelCompleted: jest.fn(),
+    resetPlayerAnimation: jest.fn(),
+  };
+
+  const app = new AppComponent(props);
+  app.frameStart = 0;
+  app.runGame(1000);
+
+  expect(props.coinCollected).toHaveBeenCalled();
+  expect(props.increaseScore).toHaveBeenCalledWith(10);
 });

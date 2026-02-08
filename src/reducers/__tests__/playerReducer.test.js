@@ -22,23 +22,25 @@ describe('playerReducer', () => {
 
   it('moves the player and advances animation frame', () => {
     const state = playerReducer(undefined, { type: 'DIRECTION_PRESSED', direction: 'RIGHT' });
-    const moved = playerReducer(state, { type: 'MOVE', timeElapsed: 1 });
+    const nextPosition = { x: state.position.x + 10, y: state.position.y };
+    const moved = playerReducer(state, { type: 'MOVE', timeElapsed: 1, position: nextPosition });
 
-    expect(moved.position.x).toBeGreaterThan(state.position.x);
+    expect(moved.position).toEqual(nextPosition);
     expect(moved.animationFrameCount).toBe(state.animationFrameCount + 1);
   });
 
   it('moves the player back when collided and clears direction', () => {
     const state = playerReducer(undefined, { type: 'DIRECTION_PRESSED', direction: 'RIGHT' });
-    const moved = playerReducer(state, { type: 'MOVE', timeElapsed: 1 });
-    const collided = playerReducer(moved, { type: 'COLLIDED', timeElapsed: 1 });
+    const nextPosition = { x: state.position.x + 10, y: state.position.y };
+    const moved = playerReducer(state, { type: 'MOVE', timeElapsed: 1, position: nextPosition });
+    const collided = playerReducer(moved, { type: 'COLLIDED', timeElapsed: 1, position: state.position });
 
     expect(collided.direction).toBeNull();
-    expect(collided.position.x).toBeLessThan(moved.position.x);
+    expect(collided.position).toEqual(state.position);
   });
 
   it('resets player state', () => {
-    const moved = playerReducer(undefined, { type: 'MOVE', timeElapsed: 1 });
+    const moved = playerReducer(undefined, { type: 'MOVE', timeElapsed: 1, position: { x: 10, y: 10 } });
     const reset = playerReducer(moved, { type: 'RESET_PLAYER' });
     const defaultState = playerReducer(undefined, { type: '@@INIT' });
 
@@ -47,7 +49,7 @@ describe('playerReducer', () => {
 
   it('resets the player animation sprite', () => {
     const state = playerReducer(undefined, { type: 'DIRECTION_PRESSED', direction: 'RIGHT' });
-    const moved = playerReducer(state, { type: 'MOVE', timeElapsed: 1 });
+    const moved = playerReducer(state, { type: 'MOVE', timeElapsed: 1, position: { x: 10, y: 10 } });
     const resetAnimation = playerReducer(moved, { type: 'RESET_PLAYER_ANIMATION' });
     const defaultState = playerReducer(undefined, { type: '@@INIT' });
 
