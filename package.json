@@ -2,6 +2,7 @@
   "name": "hac-man",
   "version": "0.1.0",
   "private": true,
+  "packageManager": "yarn@1.22.22",
   "homepage": "https://malfernion.github.io/Hac-Man/",
   "dependencies": {
     "@testing-library/jest-dom": "^6.4.2",
@@ -20,9 +21,9 @@
     "typescript": "^5.5.4"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
+    "start": "NODE_OPTIONS=--openssl-legacy-provider react-scripts start",
+    "build": "NODE_OPTIONS=--openssl-legacy-provider react-scripts build",
+    "test": "NODE_OPTIONS=--openssl-legacy-provider react-scripts test",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
