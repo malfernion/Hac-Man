@@ -75,8 +75,15 @@ canvas {
   grid-gap: 20px;
 }
 
-.game-board-wrapper {
+.game-board-area {
   grid-area: main;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.game-board-wrapper {
   height: var(--board-size);
   width: var(--board-size);
   margin-left: auto;
@@ -122,10 +129,9 @@ canvas {
   grid-row: 2;
 }
 
-.touch-reset {
-  position: absolute;
-  top: 12px;
-  right: 12px;
+.reset-button {
+  align-self: flex-end;
+  margin-right: 12px;
   background: rgba(0, 0, 0, 0.7);
   color: yellow;
   border: 1px solid yellow;
@@ -153,6 +159,11 @@ canvas {
 
   .Info {
     width: min(95vw, 480px);
+  }
+
+  .reset-button {
+    align-self: center;
+    margin-right: 0;
   }
 }
 

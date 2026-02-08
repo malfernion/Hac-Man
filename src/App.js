@@ -217,59 +217,61 @@ class App extends React.Component {
           level={this.props.levels}
           showStageName={this.props.gameInfo.showStageName}
         />
-        <div
-          className="game-board-wrapper"
-          data-testid="game-board-wrapper"
-          onPointerDown={this.handleSwipeStart}
-          onPointerUp={this.handleSwipeEnd}
-          onPointerCancel={this.handleSwipeCancel}
-          onTouchStart={this.handleSwipeStart}
-          onTouchEnd={this.handleSwipeEnd}
-        >
-          <GameBoard
-            player={this.props.player}
-            level={this.props.levels}
-            gameInfo={this.props.gameInfo}
-          />
-          <div className="touch-overlay" aria-hidden="true">
-            <button
-              type="button"
-              className="touch-zone touch-zone--up"
-              aria-label="Move up"
-              onPointerDown={(event) => this.handlePointerMovePressed('UP', event)}
-              onTouchStart={() => this.onMovePressed('UP')}
+        <div className="game-board-area">
+          <div
+            className="game-board-wrapper"
+            data-testid="game-board-wrapper"
+            onPointerDown={this.handleSwipeStart}
+            onPointerUp={this.handleSwipeEnd}
+            onPointerCancel={this.handleSwipeCancel}
+            onTouchStart={this.handleSwipeStart}
+            onTouchEnd={this.handleSwipeEnd}
+          >
+            <GameBoard
+              player={this.props.player}
+              level={this.props.levels}
+              gameInfo={this.props.gameInfo}
             />
-            <button
-              type="button"
-              className="touch-zone touch-zone--down"
-              aria-label="Move down"
-              onPointerDown={(event) => this.handlePointerMovePressed('DOWN', event)}
-              onTouchStart={() => this.onMovePressed('DOWN')}
-            />
-            <button
-              type="button"
-              className="touch-zone touch-zone--left"
-              aria-label="Move left"
-              onPointerDown={(event) => this.handlePointerMovePressed('LEFT', event)}
-              onTouchStart={() => this.onMovePressed('LEFT')}
-            />
-            <button
-              type="button"
-              className="touch-zone touch-zone--right"
-              aria-label="Move right"
-              onPointerDown={(event) => this.handlePointerMovePressed('RIGHT', event)}
-              onTouchStart={() => this.onMovePressed('RIGHT')}
-            />
-            <button
-              type="button"
-              className="touch-reset"
-              aria-label="Reset game"
-              onPointerDown={this.handlePointerResetPressed}
-              onTouchStart={this.handleResetPressed}
-            >
-              Reset
-            </button>
+            <div className="touch-overlay" aria-hidden="true">
+              <button
+                type="button"
+                className="touch-zone touch-zone--up"
+                aria-label="Move up"
+                onPointerDown={(event) => this.handlePointerMovePressed('UP', event)}
+                onTouchStart={() => this.onMovePressed('UP')}
+              />
+              <button
+                type="button"
+                className="touch-zone touch-zone--down"
+                aria-label="Move down"
+                onPointerDown={(event) => this.handlePointerMovePressed('DOWN', event)}
+                onTouchStart={() => this.onMovePressed('DOWN')}
+              />
+              <button
+                type="button"
+                className="touch-zone touch-zone--left"
+                aria-label="Move left"
+                onPointerDown={(event) => this.handlePointerMovePressed('LEFT', event)}
+                onTouchStart={() => this.onMovePressed('LEFT')}
+              />
+              <button
+                type="button"
+                className="touch-zone touch-zone--right"
+                aria-label="Move right"
+                onPointerDown={(event) => this.handlePointerMovePressed('RIGHT', event)}
+                onTouchStart={() => this.onMovePressed('RIGHT')}
+              />
+            </div>
           </div>
+          <button
+            type="button"
+            className="reset-button"
+            aria-label="Reset game"
+            onPointerDown={this.handlePointerResetPressed}
+            onTouchStart={this.handleResetPressed}
+          >
+            Reset
+          </button>
         </div>
         <GameInfo gameInfo={this.props.gameInfo} />
       </div>
