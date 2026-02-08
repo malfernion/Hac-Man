@@ -4,7 +4,7 @@ import { resetGame, startGame, increaseScore, levelCompleted, powerModeStarted, 
 import { directionPressed, movePlayer, resetPlayer, playerCollided, changeToNextDirection, resetPlayerAnimation } from './actions/playerActions';
 import { coinCollected, pillCollected, resetLeveLProgress } from './actions/levelActions';
 import { findCollidingCoin, findCollidingPill } from './helpers/collisionHelpers';
-import { canChangeDirection, getNextCharacterRailPosition } from './helpers/movementHelpers';
+import { canChangeDirection, checkAndTransformIntoBounds, getNextCharacterRailPosition } from './helpers/movementHelpers';
 
 import GameInfo from './components/GameInfo';
 import GameBoard from './components/GameBoard';
@@ -38,14 +38,17 @@ class App extends React.Component {
       ? getNextCharacterRailPosition(this.props.player, effectiveDirection, timeElapsed, walls)
       : { position: this.props.player.position, blocked: false };
 
+    const wrappedPosition = Object.assign({}, nextMove.position);
+    checkAndTransformIntoBounds(wrappedPosition);
+
     if(nextMove.blocked) {
-      this.props.playerCollided(0, nextMove.position);
+      this.props.playerCollided(0, wrappedPosition);
     } else {
-      this.props.movePlayer(timeElapsed, nextMove.position);
+      this.props.movePlayer(timeElapsed, wrappedPosition);
     }
 
     const playerForCollision = Object.assign({}, this.props.player, {
-      position: nextMove.position,
+      position: wrappedPosition,
     });
     const collidingCoin = findCollidingCoin(playerForCollision, coins);
     const collidingPill = findCollidingPill(playerForCollision, pills);
