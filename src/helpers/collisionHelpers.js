@@ -85,3 +85,21 @@ export function findCollidingCoin (character, coins) {
 export function findCollidingPill (character, pills) {
     return findCollidingPoint(character, pills);
 }
+
+/**
+ * Checks for collision between the player and any ghosts, returning the colliding ghost
+ * @param {*} character the player character to check for collisions
+ * @param {*} ghosts the array of ghosts to check for collisions against
+ */
+export function findCollidingGhost (character, ghosts) {
+    const { position, size } = character;
+    const collisionRadius = size / 2;
+
+    for (const ghost of ghosts) {
+        const ghostRadius = ghost.size / 2;
+        const distance = Math.hypot(position.x - ghost.position.x, position.y - ghost.position.y);
+        if(distance <= collisionRadius + ghostRadius) {
+            return ghost;
+        }
+    }
+}

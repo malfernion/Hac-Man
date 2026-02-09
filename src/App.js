@@ -1,10 +1,12 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { resetGame, startGame, increaseScore, levelCompleted, powerModeStarted, powerModeEnded } from './actions/gameInfoActions';
+import { resetGame, startGame, increaseScore, levelCompleted, powerModeStarted, powerModeEnded, lostLife, ghostKilled } from './actions/gameInfoActions';
 import { directionPressed, movePlayer, resetPlayer, playerCollided, changeToNextDirection, resetPlayerAnimation } from './actions/playerActions';
 import { coinCollected, pillCollected, resetLeveLProgress } from './actions/levelActions';
-import { findCollidingCoin, findCollidingPill } from './helpers/collisionHelpers';
+import { moveGhosts, resetGhosts, ghostEaten } from './actions/ghostActions';
+import { findCollidingCoin, findCollidingPill, findCollidingGhost } from './helpers/collisionHelpers';
 import { canChangeDirection, checkAndTransformIntoBounds, getNextCharacterRailPosition } from './helpers/movementHelpers';
+import { getNextGhostStates } from './helpers/ghostHelpers';
 
 import GameInfo from './components/GameInfo';
 import GameBoard from './components/GameBoard';
@@ -64,6 +66,7 @@ class App extends React.Component {
     });
     const collidingCoin = findCollidingCoin(playerForCollision, coins);
     const collidingPill = findCollidingPill(playerForCollision, pills);
+    const poweredUpThisTick = poweredUp || Boolean(collidingPill);
     if(collidingPill) {
       this.props.pillCollected(collidingPill);
       this.props.increaseScore(50);
@@ -76,6 +79,28 @@ class App extends React.Component {
       if(coins.length <= 1) {
         this.props.levelCompleted();
         this.props.resetPlayerAnimation();
+      }
+    }
+
+    const updatedGhosts = getNextGhostStates({
+      ghosts: this.props.ghosts.ghosts,
+      player: playerForCollision,
+      walls,
+      timeElapsed,
+      poweredUp: poweredUpThisTick,
+    });
+    this.props.moveGhosts(updatedGhosts);
+
+    const collidingGhost = findCollidingGhost(playerForCollision, updatedGhosts);
+    if(collidingGhost) {
+      if(poweredUpThisTick) {
+        this.props.ghostKilled();
+        this.props.increaseScore(200);
+        this.props.ghostEaten(collidingGhost.id);
+      } else {
+        this.props.lostLife();
+        this.props.resetPlayer();
+        this.props.resetGhosts();
       }
     }
 
@@ -130,6 +155,7 @@ class App extends React.Component {
         this.props.resetGame();
         this.props.resetPlayer();
         this.props.resetLeveLProgress();
+        this.props.resetGhosts();
         if(this.animationRequest) {
           window.cancelAnimationFrame(this.animationRequest);
         }
@@ -200,6 +226,7 @@ class App extends React.Component {
     this.props.resetGame();
     this.props.resetPlayer();
     this.props.resetLeveLProgress();
+    this.props.resetGhosts();
     if(this.animationRequest) {
       window.cancelAnimationFrame(this.animationRequest);
     }
@@ -231,6 +258,7 @@ class App extends React.Component {
               player={this.props.player}
               level={this.props.levels}
               gameInfo={this.props.gameInfo}
+              ghosts={this.props.ghosts.ghosts}
             />
             <div className="touch-overlay" aria-hidden="true">
               <button
@@ -299,6 +327,11 @@ const mapDispatchToProps = dispatch => ({
   resetLeveLProgress: () => dispatch(resetLeveLProgress()),
   levelCompleted: () => dispatch(levelCompleted()),
   resetPlayerAnimation: () => dispatch(resetPlayerAnimation()),
+  moveGhosts: (ghosts) => dispatch(moveGhosts(ghosts)),
+  resetGhosts: () => dispatch(resetGhosts()),
+  lostLife: () => dispatch(lostLife()),
+  ghostKilled: () => dispatch(ghostKilled()),
+  ghostEaten: (ghostId) => dispatch(ghostEaten(ghostId)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);
