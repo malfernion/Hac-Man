@@ -66,6 +66,7 @@ class App extends React.Component {
     });
     const collidingCoin = findCollidingCoin(playerForCollision, coins);
     const collidingPill = findCollidingPill(playerForCollision, pills);
+    const poweredUpThisTick = poweredUp || Boolean(collidingPill);
     if(collidingPill) {
       this.props.pillCollected(collidingPill);
       this.props.increaseScore(50);
@@ -86,13 +87,13 @@ class App extends React.Component {
       player: playerForCollision,
       walls,
       timeElapsed,
-      poweredUp,
+      poweredUp: poweredUpThisTick,
     });
     this.props.moveGhosts(updatedGhosts);
 
     const collidingGhost = findCollidingGhost(playerForCollision, updatedGhosts);
     if(collidingGhost) {
-      if(poweredUp) {
+      if(poweredUpThisTick) {
         this.props.ghostKilled();
         this.props.increaseScore(200);
         this.props.ghostEaten(collidingGhost.id);
