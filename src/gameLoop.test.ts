@@ -196,6 +196,26 @@ describe('tickGameState – ghost ticks', () => {
     expect(actions.some(a => a.type === 'GLOBAL_MODE_TICK')).toBe(true);
   });
 
+  it('ghost eventually leaves the house after enough dots', () => {
+    let state = startedState();
+
+    // Force pinky to have enough dot count to leave
+    state = {
+      ...state,
+      ghosts: {
+        ...state.ghosts,
+        ghosts: state.ghosts.ghosts.map(g =>
+          g.id === 'pinky' ? { ...g, dotCounter: 100, dotLimit: 0 } : g,
+        ),
+      },
+    };
+
+    const finalState = simulate(state, 200, 16);
+    const pinky = finalState.ghosts.ghosts.find(g => g.id === 'pinky')!;
+    // After 200 frames (3.2s), pinky should have left the house
+    expect(pinky.mode).not.toBe('home');
+  });
+
   it('ghosts never enter wall tiles over 200 simulated frames', () => {
     let state = startedState();
     const { grid } = state.levels.currentLevel;

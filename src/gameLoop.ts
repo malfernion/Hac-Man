@@ -86,26 +86,41 @@ function tickGhost(
     return { position: result.position, direction: newDir, mode: 'home' };
   }
 
-  // ── Leaving mode: move to door tile, then enter game ──
+  // ── Leaving mode: navigate to house center column, then move UP through door ──
   if (mode === 'leaving') {
-    const doorTarget = tileToPixel(grid
-      .reduce<{ col: number; row: number } | null>((found, row, r) => {
-        if (found) return found;
-        const c = row.indexOf(Tile.GHOST_DOOR);
-        return c >= 0 ? { col: c, row: r } : null;
-      }, null) ?? { col: 14, row: 11 });
+    // Find center door column (middle of the three door tiles)
+    let doorCol = 14;
+    let doorRow = 11;
+    for (let r = 0; r < grid.length; r++) {
+      const c = grid[r].indexOf(Tile.GHOST_DOOR);
+      if (c >= 0) {
+        doorCol = c + 1; // center tile of three-tile door
+        doorRow = r;
+        break;
+      }
+    }
+    const centerX = doorCol * TILE_SIZE + TILE_SIZE / 2; // pixel center of exit column
+    const speed = params.ghostSpeed * 0.5;
+    const currentTile = pixelToTile(ghost.position);
 
-    const result = moveCharacter(ghost.position, ghost.direction, params.ghostSpeed * 0.5, deltaMs, grid, true);
-    const ghostTile = pixelToTile(result.position);
-    const doorTile = pixelToTile(doorTarget);
-
-    if (ghostTile.col === doorTile.col && ghostTile.row <= doorTile.row) {
-      return { position: result.position, direction: 'UP', mode: 'leaving' };
+    // If ghost has cleared the door row, transition to game
+    if (currentTile.row < doorRow) {
+      const newMode: GhostMode = globalMode;
+      return { direction: 'LEFT', mode: newMode, targetTile: GHOST_HOME_CORNERS[ghost.id] };
     }
 
-    // Reached door – join main game
-    const newMode: GhostMode = globalMode;
-    return { position: doorTarget, direction: 'LEFT', mode: newMode, targetTile: GHOST_HOME_CORNERS[ghost.id] };
+    // Phase 1: move horizontally to align with exit column
+    const dx = centerX - ghost.position.x;
+    if (Math.abs(dx) > 2) {
+      const dir: Direction = dx > 0 ? 'RIGHT' : 'LEFT';
+      const result = moveCharacter(ghost.position, dir, speed, deltaMs, grid, true);
+      return { position: result.position, direction: dir };
+    }
+
+    // Phase 2: aligned – move UP through door
+    const snappedPos = { x: centerX, y: ghost.position.y };
+    const result = moveCharacter(snappedPos, 'UP', speed, deltaMs, grid, true);
+    return { position: result.position, direction: 'UP' };
   }
 
   // ── Eaten mode: follow BFS path back to house ──
