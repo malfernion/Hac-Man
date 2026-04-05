@@ -45,13 +45,22 @@ const GameAudio: React.FC<Props> = ({ gameInfo, onIntroFinished }) => {
     }
   }, [onIntroFinished]);
 
-  // Play intro when game starts
+  // Play intro when game starts; fallback timeout if audio can't play
   useEffect(() => {
-    if (gameInfo.playingIntro) {
-      sirenRef.current?.pause();
-      introRef.current?.play().catch(() => {});
+    if (!gameInfo.playingIntro) return;
+    sirenRef.current?.pause();
+    const audio = introRef.current;
+    if (audio) {
+      audio.play().catch(() => {
+        // Audio blocked (e.g., browser autoplay policy) – skip intro
+        onIntroFinished();
+      });
+    } else {
+      // No audio available – advance immediately
+      const t = setTimeout(onIntroFinished, 100);
+      return () => clearTimeout(t);
     }
-  }, [gameInfo.playingIntro]);
+  }, [gameInfo.playingIntro]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Play siren when game is active
   useEffect(() => {
