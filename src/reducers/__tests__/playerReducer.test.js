@@ -7,7 +7,7 @@ describe('playerReducer', () => {
     const queued = playerReducer(withDirection, { type: 'DIRECTION_PRESSED', direction: 'UP' });
 
     expect(withDirection.direction).toBe('LEFT');
-    expect(withDirection.nextDirection).toBeUndefined();
+    expect(withDirection.nextDirection).toBeNull();
     expect(queued.nextDirection).toBe('UP');
   });
 
