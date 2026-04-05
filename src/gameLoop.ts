@@ -209,7 +209,7 @@ type TickAction =
   | { type: 'FRIGHTENED_ENDED' }
   | { type: 'GLOBAL_MODE_TICK';      deltaMs: number }
   | { type: 'DOT_EATEN_GHOST' }
-  | { type: 'GHOSTS_REVERSE' }
+  | { type: 'GHOSTS_REVERSE'; newPhase: number }
   | { type: 'PLAYER_DYING';          timestamp: number }
   | { type: 'LOST_LIFE' }
   | { type: 'PLAYER_RESPAWN' }
@@ -261,8 +261,9 @@ export function tickGameState(
     const newTimer = ghostsSlice.globalModeTimer + clampedDelta;
     const currentPhase = schedule[ghostsSlice.globalModePhase];
     if (currentPhase && newTimer >= currentPhase.duration && currentPhase.duration !== Infinity) {
-      // Mode phase ends – ghosts reverse direction
-      actions.push({ type: 'GHOSTS_REVERSE' });
+      // Mode phase ends – advance to next phase and reverse ghost directions
+      const newPhase = ghostsSlice.globalModePhase + 1;
+      actions.push({ type: 'GHOSTS_REVERSE', newPhase } as TickAction);
     }
   }
 

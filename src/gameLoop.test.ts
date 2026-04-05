@@ -196,6 +196,30 @@ describe('tickGameState – ghost ticks', () => {
     expect(actions.some(a => a.type === 'GLOBAL_MODE_TICK')).toBe(true);
   });
 
+  it('global mode phase advances when scatter phase expires', () => {
+    // First scatter phase is 7000ms; simulate past it
+    let state = startedState();
+    // Set timer near the end of the first scatter phase
+    state = {
+      ...state,
+      ghosts: {
+        ...state.ghosts,
+        globalModeTimer: 6990, // 10ms before end
+        globalModePhase: 0,
+      },
+    };
+
+    // First frame – still in phase 0
+    let actions = tickGameState(state, 16, 10000);
+    for (const action of actions) {
+      state = rootReducer(state, action as Parameters<typeof rootReducer>[1]);
+    }
+
+    // Phase should have advanced to 1
+    expect(state.ghosts.globalModePhase).toBe(1);
+    expect(state.ghosts.globalModeTimer).toBe(0); // timer resets
+  });
+
   it('ghost eventually leaves the house after enough dots', () => {
     let state = startedState();
 

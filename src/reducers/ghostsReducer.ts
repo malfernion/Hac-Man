@@ -151,14 +151,18 @@ export default function ghostsReducer(
         ),
       };
 
-    case GHOSTS_REVERSE:
+    case GHOSTS_REVERSE: {
+      const newPhase = (action as GhostAction & { newPhase?: number }).newPhase ?? state.globalModePhase + 1;
       return {
         ...state,
+        globalModePhase: newPhase,
+        globalModeTimer: 0,
         ghosts: state.ghosts.map(g => {
           if (g.mode === 'frightened' || g.mode === 'eaten' || g.mode === 'home') return g;
           return { ...g, direction: reverseDirection(g.direction) };
         }),
       };
+    }
 
     case RESET_GHOSTS:
       return { ...defaultState, ghosts: buildDefaultGhosts() };

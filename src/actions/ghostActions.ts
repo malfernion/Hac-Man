@@ -56,8 +56,8 @@ export function resetGhosts() {
   return { type: RESET_GHOSTS as typeof RESET_GHOSTS };
 }
 
-export function ghostsReverse() {
-  return { type: GHOSTS_REVERSE as typeof GHOSTS_REVERSE };
+export function ghostsReverse(newPhase: number) {
+  return { type: GHOSTS_REVERSE as typeof GHOSTS_REVERSE, newPhase };
 }
 
 export type GhostAction =
