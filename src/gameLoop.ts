@@ -213,6 +213,8 @@ type TickAction =
   | { type: 'PLAYER_DYING';          timestamp: number }
   | { type: 'LOST_LIFE' }
   | { type: 'PLAYER_RESPAWN' }
+  | { type: 'RESET_PLAYER' }
+  | { type: 'RESET_GHOSTS' }
   | { type: 'GAME_OVER' }
   | { type: 'ADD_SCORE_POPUP';       popup: { id: number; value: number; position: Position; createdAt: number } }
   | { type: 'REMOVE_SCORE_POPUP';    id: number }
@@ -418,6 +420,8 @@ export function tickGameState(
         actions.push({ type: 'GAME_OVER' });
       } else {
         actions.push({ type: 'PLAYER_RESPAWN' });
+        actions.push({ type: 'RESET_PLAYER' });
+        actions.push({ type: 'RESET_GHOSTS' });
       }
     }
   }

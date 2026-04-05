@@ -280,7 +280,7 @@ describe('tickGameState – player death', () => {
     expect(actions.some(a => a.type === 'GAME_OVER')).toBe(true);
   });
 
-  it('PLAYER_RESPAWN when lives remain after death animation', () => {
+  it('PLAYER_RESPAWN + RESET_PLAYER + RESET_GHOSTS when lives remain', () => {
     let state = startedState();
     state = {
       ...state,
@@ -295,6 +295,8 @@ describe('tickGameState – player death', () => {
     const actions = tickGameState(state, 16, 10000);
     expect(actions.some(a => a.type === 'LOST_LIFE')).toBe(true);
     expect(actions.some(a => a.type === 'PLAYER_RESPAWN')).toBe(true);
+    expect(actions.some(a => a.type === 'RESET_PLAYER')).toBe(true);
+    expect(actions.some(a => a.type === 'RESET_GHOSTS')).toBe(true);
     expect(actions.some(a => a.type === 'GAME_OVER')).toBe(false);
   });
 });
