@@ -75,21 +75,15 @@ export default function ghostsReducer(
       return { ...state, ghosts: action.ghosts };
 
     case GHOST_TICK: {
-      const { payload } = action;
+      const { id, ...raw } = action.payload;
+      // Only merge defined fields so partial updates don't overwrite existing state with undefined
+      const updates = Object.fromEntries(
+        Object.entries(raw).filter(([, v]) => v !== undefined),
+      ) as Partial<GhostState>;
       return {
         ...state,
         ghosts: state.ghosts.map(g =>
-          g.id === payload.id
-            ? {
-                ...g,
-                position: payload.position,
-                direction: payload.direction,
-                mode: payload.mode,
-                targetTile: payload.targetTile,
-                returnPath: payload.returnPath,
-                frightenedFlashing: payload.frightenedFlashing,
-              }
-            : g,
+          g.id === id ? { ...g, ...updates } : g,
         ),
       };
     }
