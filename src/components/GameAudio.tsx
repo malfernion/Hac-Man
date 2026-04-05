@@ -13,7 +13,6 @@ const GameAudio: React.FC<Props> = ({ gameInfo, onIntroFinished }) => {
   const munch2Ref   = useRef<HTMLAudioElement | null>(null);
   const munchToggle = useRef(false);
   const prevScore   = useRef(gameInfo.score);
-  const prevPowered = useRef(gameInfo.poweredUp);
 
   useEffect(() => {
     try {

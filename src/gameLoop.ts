@@ -28,9 +28,6 @@ import {
 } from './helpers/collisionHelpers';
 import {
   pixelToTile,
-  tileToPixel,
-  wrapTile,
-  stepTile,
   getTileAt,
   bfsPath,
   reverseDirection,
@@ -40,12 +37,10 @@ import {
   getChaseTarget,
   chooseBestDirection,
   chooseRandomDirection,
-  ghostCanEnterTile,
   atTileCenter,
   GHOST_HOME_CORNERS,
 } from './helpers/ghostHelpers';
 import { getLevelParams, getModeSchedule } from './data/levelParams';
-import { getSpriteCords } from './helpers/animationHelpers';
 
 // ─── Ghost house / release logic ─────────────────────────────────────────────
 
@@ -71,16 +66,12 @@ function tickGhost(
   frightenedTimer: number,
   frightenedFlashAt: number,
   deltaMs: number,
-  timestamp: number,
+  _timestamp: number,
 ): Partial<GhostState> {
   const { mode } = ghost;
 
   // ── Home mode: bounce vertically in house ──
   if (mode === 'home') {
-    const home = ghost.homePosition;
-    const bounceTarget = ghost.direction === 'UP'
-      ? { ...home, y: home.y - TILE_SIZE }
-      : { ...home, y: home.y + TILE_SIZE };
     const result = moveCharacter(ghost.position, ghost.direction, HOME_BOUNCE_SPEED, deltaMs, grid, true);
     const newDir = result.blocked ? reverseDirection(ghost.direction) : ghost.direction;
     return { position: result.position, direction: newDir, mode: 'home' };

@@ -1,4 +1,4 @@
-import { GhostState, GhostsSlice, TileCoord, Direction } from '../types';
+import { GhostState, TileCoord, Direction } from '../types';
 
 // ─── Action types ─────────────────────────────────────────────────────────────
 

@@ -1,5 +1,5 @@
-import { LevelDefinition, ComputedLevel, Tile, Position } from '../types';
-import { computeGrid, tileToPixel, TILE_SIZE } from '../helpers/tileHelpers';
+import { LevelDefinition, ComputedLevel, Position } from '../types';
+import { computeGrid, TILE_SIZE } from '../helpers/tileHelpers';
 
 // ─── Level definitions ────────────────────────────────────────────────────────
 

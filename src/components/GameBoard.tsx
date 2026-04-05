@@ -6,7 +6,6 @@ const spriteImg = new Image();
 spriteImg.src = require('../assets/sprites_16_x_16.png');
 
 const BOARD_SIZE = 812;
-const TILE_SIZE = 28;
 
 interface Props {
   player: PlayerState;
@@ -196,7 +195,6 @@ const GameBoard: React.FC<Props> = ({ player, level, gameInfo, ghosts }) => {
   }, []);
 
   const { currentLevel } = level;
-  const timestamp = timestampRef.current;
 
   // Draw on every render
   useEffect(() => {

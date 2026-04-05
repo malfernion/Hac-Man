@@ -10,7 +10,6 @@
 import { Direction, Position, Tile } from '../types';
 import {
   TILE_SIZE,
-  BOARD_SIZE,
   pixelToTile,
   tileToPixel,
   stepTile,
