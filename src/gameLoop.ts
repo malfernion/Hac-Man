@@ -286,7 +286,7 @@ export function tickGameState(
     const moveResult = moveCharacter(
       player.position,
       effectiveDirection,
-      player.speed,
+      params.playerSpeed,
       clampedDelta,
       grid,
       false,
