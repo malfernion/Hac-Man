@@ -27,7 +27,7 @@ import {
   ALL_DIRECTIONS,
   euclideanDistanceSq,
   getTileAt,
-  isWalkable,
+
   pixelToTile,
   stepTile,
   wrapTile,
@@ -240,7 +240,7 @@ export function chooseRandomDirection(
     if (dir === reverse) continue;
     const next = wrapTile(stepTile(currentTile, dir));
     const tileType = getTileAt(grid, next);
-    if (isWalkable(tileType, true) || tileType === Tile.GHOST_HOUSE) {
+    if (ghostCanEnterTile(tileType, 'frightened')) {
       valid.push(dir);
     }
   }

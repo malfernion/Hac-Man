@@ -265,12 +265,16 @@ export function tickGameState(
     }
   }
 
-  // ── 4. Player movement ───────────────────────────────────────────────────
-  let effectiveDirection = player.direction;
+  // ── 4. Player movement (skipped during death animation) ─────────────────
+  let effectiveDirection: typeof player.direction = null;
 
-  if (canChangeDirection(player.position, player.nextDirection, grid, false)) {
-    actions.push({ type: 'CHANGE_TO_NEXT_DIRECTION' });
-    effectiveDirection = player.nextDirection;
+  if (!gameInfo.playerDying) {
+    effectiveDirection = player.direction;
+
+    if (canChangeDirection(player.position, player.nextDirection, grid, false)) {
+      actions.push({ type: 'CHANGE_TO_NEXT_DIRECTION' });
+      effectiveDirection = player.nextDirection;
+    }
   }
 
   if (effectiveDirection) {
@@ -370,8 +374,8 @@ export function tickGameState(
     actions.push({ type: 'GHOST_TICK', payload: { id: ghost.id, ...updates } as Partial<GhostState> & { id: GhostState['id'] } });
   }
 
-  // ── 6. Ghost-player collision ────────────────────────────────────────────
-  if (!gameInfo.playerDying && effectiveDirection) {
+  // ── 6. Ghost-player collision (checked regardless of movement direction) ──
+  if (!gameInfo.playerDying) {
     const playerChar = {
       position: player.position,
       size: player.size,

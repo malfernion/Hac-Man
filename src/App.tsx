@@ -56,7 +56,7 @@ function App() {
     const currentState = stateRef.current;
     const { gameInfo: gi } = currentState;
 
-    if (!gi.gameStarted || gi.showGameOver || gi.levelCompleted || gi.playerDying) {
+    if (!gi.gameStarted || gi.showGameOver || gi.levelCompleted) {
       return;
     }
 
@@ -70,7 +70,7 @@ function App() {
 
   // Start/stop loop when gameStarted changes
   useEffect(() => {
-    if (gameInfo.gameStarted && !gameInfo.showGameOver && !gameInfo.levelCompleted && !gameInfo.playerDying) {
+    if (gameInfo.gameStarted && !gameInfo.showGameOver && !gameInfo.levelCompleted) {
       frameStartRef.current = undefined;
       animationFrameRef.current = requestAnimationFrame(runGame);
     } else {
@@ -79,15 +79,7 @@ function App() {
         animationFrameRef.current = null;
       }
     }
-  }, [gameInfo.gameStarted, gameInfo.showGameOver, gameInfo.levelCompleted, gameInfo.playerDying, runGame]);
-
-  // Respawn: restart loop after death
-  useEffect(() => {
-    if (gameInfo.gameStarted && !gameInfo.playerDying && !gameInfo.showGameOver) {
-      frameStartRef.current = undefined;
-      animationFrameRef.current = requestAnimationFrame(runGame);
-    }
-  }, [gameInfo.playerDying]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [gameInfo.gameStarted, gameInfo.showGameOver, gameInfo.levelCompleted, runGame]);
 
   // Cleanup on unmount
   useEffect(() => {
