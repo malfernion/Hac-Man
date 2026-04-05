@@ -28,7 +28,7 @@ describe('gameInfoReducer', () => {
   it('handles life loss and game over', () => {
     const state = gameInfoReducer(undefined, { type: '@@INIT' });
     const nextState = gameInfoReducer(state, { type: 'LOST_LIFE' });
-    const gameOverState = gameInfoReducer({ ...state, lives: 1 }, { type: 'PLAYER_DIED' });
+    const gameOverState = gameInfoReducer({ ...state, lives: 1 }, { type: 'GAME_OVER' });
 
     expect(nextState.lives).toBe(2);
     expect(gameOverState.showGameOver).toBe(true);
