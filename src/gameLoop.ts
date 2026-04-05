@@ -283,10 +283,9 @@ export function tickGameState(
     const playerForCollision = { position: moveResult.position, size: player.size };
 
     // ── 4a. Coin collision ──────────────────────────────────────────────
-    const collidingCoin = findCollidingCoin(playerForCollision, currentLevel.coins as [number, number][]);
+    const collidingCoin = findCollidingCoin(playerForCollision, currentLevel.coins);
     if (collidingCoin) {
-      const coinPos: Position = { x: collidingCoin[0], y: collidingCoin[1] };
-      actions.push({ type: 'COIN_COLLECTED', coin: coinPos });
+      actions.push({ type: 'COIN_COLLECTED', coin: collidingCoin });
       actions.push({ type: 'INCREASE_SCORE', score: 10 });
       actions.push({ type: 'DOT_EATEN_GHOST' });
 
@@ -303,10 +302,9 @@ export function tickGameState(
     }
 
     // ── 4b. Pill collision ──────────────────────────────────────────────
-    const collidingPill = findCollidingPill(playerForCollision, currentLevel.pills as [number, number][]);
+    const collidingPill = findCollidingPill(playerForCollision, currentLevel.pills);
     if (collidingPill) {
-      const pillPos: Position = { x: collidingPill[0], y: collidingPill[1] };
-      actions.push({ type: 'PILL_COLLECTED', pill: pillPos });
+      actions.push({ type: 'PILL_COLLECTED', pill: collidingPill });
       actions.push({ type: 'INCREASE_SCORE', score: 50 });
       const endsAt = timestamp + params.frightenedDuration;
       actions.push({ type: 'POWER_MODE_STARTED', endsAt });
@@ -337,7 +335,7 @@ export function tickGameState(
 
       if (shouldRelease) {
         activeGhost = { ...ghost, mode: 'leaving', direction: 'UP' };
-        actions.push({ type: 'GHOST_TICK', payload: { id: ghost.id, ...activeGhost } });
+        actions.push({ type: 'GHOST_TICK', payload: { ...activeGhost } });
         continue;
       }
     }

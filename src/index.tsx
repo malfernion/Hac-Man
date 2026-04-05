@@ -14,10 +14,14 @@ const rootEl = document.getElementById('root');
 if (!rootEl) throw new Error('Root element not found');
 
 const root = createRoot(rootEl);
+// react-redux@7 + @types/react@18.3 compatibility: Provider type mismatch is a known issue
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const AnyProvider = Provider as React.ComponentType<{ store: any; children: React.ReactNode }>;
+
 root.render(
   <React.StrictMode>
-    <Provider store={store}>
+    <AnyProvider store={store}>
       <App />
-    </Provider>
+    </AnyProvider>
   </React.StrictMode>,
 );

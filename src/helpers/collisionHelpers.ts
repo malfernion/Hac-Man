@@ -1,52 +1,49 @@
-import { Position, GhostState, GhostMode } from '../types';
+import { Position, GhostState } from '../types';
 
 interface Character {
   position: Position;
   size: number;
 }
 
-type PointArray = [number, number];
-
 // ─── Collectible collision ────────────────────────────────────────────────────
 
-function findCollidingPoint(character: Character, points: PointArray[]): PointArray | undefined {
+function pointInBounds(px: number, py: number, lx: number, rx: number, ly: number, ry: number): boolean {
+  return px > lx && px < rx && py > ly && py < ry;
+}
+
+function characterBounds(character: Character) {
   const { position, size } = character;
   const halfSize = size / 2;
-  const lx = position.x - halfSize;
-  const rx = position.x + halfSize;
-  const ly = position.y - halfSize;
-  const ry = position.y + halfSize;
-
-  for (const point of points) {
-    const cx = point[0];
-    const cy = point[1];
-    if (cx > lx && cx < rx && cy > ly && cy < ry) {
-      return point;
-    }
-  }
-  return undefined;
+  return {
+    lx: position.x - halfSize,
+    rx: position.x + halfSize,
+    ly: position.y - halfSize,
+    ry: position.y + halfSize,
+  };
 }
 
 /**
- * Returns the first coin whose position is inside the character's bounding box,
- * or undefined if none.
+ * Returns the first coin (as Position) whose position is inside the character's
+ * bounding box, or undefined if none.
  */
 export function findCollidingCoin(
   character: Character,
-  coins: PointArray[],
-): PointArray | undefined {
-  return findCollidingPoint(character, coins);
+  coins: Position[],
+): Position | undefined {
+  const { lx, rx, ly, ry } = characterBounds(character);
+  return coins.find(c => pointInBounds(c.x, c.y, lx, rx, ly, ry));
 }
 
 /**
- * Returns the first pill whose position is inside the character's bounding box,
- * or undefined if none.
+ * Returns the first pill (as Position) whose position is inside the character's
+ * bounding box, or undefined if none.
  */
 export function findCollidingPill(
   character: Character,
-  pills: PointArray[],
-): PointArray | undefined {
-  return findCollidingPoint(character, pills);
+  pills: Position[],
+): Position | undefined {
+  const { lx, rx, ly, ry } = characterBounds(character);
+  return pills.find(p => pointInBounds(p.x, p.y, lx, rx, ly, ry));
 }
 
 // ─── Ghost collision ──────────────────────────────────────────────────────────
