@@ -2,8 +2,9 @@ import React, { useRef, useEffect } from 'react';
 import { PlayerState, GhostsSlice, GhostState, GhostId, LevelsState, GameInfoState, Position, ScorePopup } from '../types';
 
 // Sprite sheet import
+import spriteSheetUrl from '../assets/sprites_16_x_16.png';
 const spriteImg = new Image();
-spriteImg.src = require('../assets/sprites_16_x_16.png');
+spriteImg.src = spriteSheetUrl;
 
 const BOARD_SIZE = 812;
 

@@ -6,7 +6,7 @@ import store from './store';
 import './index.css';
 import App from './App';
 
-if (process.env.NODE_ENV !== 'production') {
+if (import.meta.env.MODE !== 'production') {
   (window as any).__HACMAN_STORE__ = store;
 }
 
