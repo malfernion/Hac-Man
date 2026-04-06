@@ -1,5 +1,9 @@
 import React, { useEffect, useRef } from 'react';
 import { GameInfoState } from '../types';
+import gameStartUrl from '../assets/game_start.wav';
+import sirenUrl from '../assets/siren.wav';
+import munch1Url from '../assets/munch_1.wav';
+import munch2Url from '../assets/munch_2.wav';
 
 interface Props {
   gameInfo: GameInfoState;
@@ -16,10 +20,10 @@ const GameAudio: React.FC<Props> = ({ gameInfo, onIntroFinished }) => {
 
   useEffect(() => {
     try {
-      introRef.current  = new Audio(require('../assets/game_start.wav'));
-      sirenRef.current  = new Audio(require('../assets/siren.wav'));
-      munch1Ref.current = new Audio(require('../assets/munch_1.wav'));
-      munch2Ref.current = new Audio(require('../assets/munch_2.wav'));
+      introRef.current  = new Audio(gameStartUrl);
+      sirenRef.current  = new Audio(sirenUrl);
+      munch1Ref.current = new Audio(munch1Url);
+      munch2Ref.current = new Audio(munch2Url);
 
       if (sirenRef.current) {
         sirenRef.current.loop = true;
